@@ -43,12 +43,13 @@ def verificar_senha(usuario_ou_token, senha):
 
 
 @app.route("/")
-@app.route("/categorias")
+@app.route("/categorias/")
 def showCategorias():
-    return "mostrando o catalogo!"
+    todasCategorias = session.query(Categoria).all()
+    return render_template("showCategorias.html", categorias = todasCategorias)
 
 
-@app.route('/login', methods=["GET", "POST"])
+@app.route('/login/', methods=["GET", "POST"])
 def loginUsuario():
     if request.method == "POST":
         return "login usuario!"
@@ -56,7 +57,7 @@ def loginUsuario():
         return "visualizando pagina de login!"
 
 
-@app.route('/usuarios', methods=['POST'])
+@app.route('/usuarios/', methods=['POST'])
 def newUsuario():
     if request.method == "POST":
         return "novo usuario criado!";
@@ -64,70 +65,133 @@ def newUsuario():
 
 @app.route("/categorias/new/", methods=["GET", "POST"])
 def newCategoria():
-    if request.method == "POST":
-        return "adicionando categoria no catalogo!"
-    else:
-        return "mostrar formulario para adicionar categoria!"
+    if request.method == 'POST':
+        newCategoria = Categoria(nome=request.form['nome'])
+        session.add(newCategoria)
+        session.commit()
+        flash("Nova categoria criada!")
+        return redirect(url_for("showCategoria"))
+    else: 
+        return render_template("newCategoria.html")
 
 
 @app.route("/categorias/<int:categoria>/")
 def showCategoria(categoria):
-    return "mostrando a CATEGORIA!"
+    todasCategorias = session.query(Categoria).all()
+    umaCategoria = session.query(Categoria).filter_by(id=categoria).one()
+    if umaCategoria is None:
+        return showCategorias()
+    else:
+        return render_template("showCategoria.html", categorias=todasCategorias, categoria=umaCategoria)
 
 
 @app.route("/categorias/<int:categoria>/edit/", methods=["GET", "POST"])
 def editCategoria(categoria):
-    if request.method == "POST":
-        return "editando categoria!"
+    umaCategoria = session.query(Categoria).filter_by(id=categoria).one()
+    if umaCategoria is None:
+        return showCategorias()
     else:
-        return "mostrar formulario para editar categoria!"
+        if request.method == 'POST':
+            umaCategoria.nome = request.form['nome']
+            session.add(umaCategoria)
+            session.commit()
+            flash("A categoria foi editada!")
+            return redirect(url_for("showCategoria", categoria=umaCategoria.id))
+        else: 
+            return render_template("editCategoria.html", categoria=umaCategoria)
 
 
 @app.route("/categorias/<int:categoria>/delete/", methods=["GET", "POST"])
 def deleteCategoria(categoria):
-    if request.method == "POST":
-        return "deletando categoria!"
+    umaCategoria = session.query(Categoria).filter_by(id=categoria).one()
+    if umaCategoria is None:
+        return showCategorias()
     else:
-        return "mostrar formulario para deletar categoria!"
+        if request.method == 'POST':
+            session.delete(umaCategoria)
+            session.commit()
+            flash("A categoria foi excluída!")
+            return redirect(url_for("showCategorias"))
+        else: 
+            return render_template("deleteCategoria.html", categoria=umaCategoria)
 
+@app.route("/categorias/<int:categoria>/<int:item>/")
+def showItem(categoria, item):
+    umItem = session.query(Item).filter_by(id=item, categoria_id=categoria).one()
+    if umItem is None:
+        return showCategoria(categoria=categoria)
+    else:
+        return render_template("showItem.html", item=umItem)
 
 @app.route("/categorias/<int:categoria>/new/", methods=["GET", "POST"])
 def newItem(categoria):
-    if request.method == "POST":
-        return "adicionando item na categoria!"
+    umaCategoria = session.query(Categoria).filter_by(id=categoria).one()
+    if umaCategoria is None:
+        return showCategorias()
     else:
-        return "mostrar formulario para adicionar item!"
+        if request.method == 'POST':
+            newItem = Item(nome=request.form['nome'],
+                            descricao=request.form['descricao'],
+                            imagem=request.form['imagem'],
+                            categoria=umaCategoria)
+            session.add(newItem)
+            session.commit()
+            flash("Novo item criado!")
+            return redirect(url_for("showItem", item=newItem.id))
+        else: 
+            return render_template("newItem.html", categoria=umaCategoria)
 
 
 @app.route("/categorias/<int:categoria>/<int:item>/edit/", methods=["GET", "POST"])
 def editItem(categoria, item):
-    if request.method == "POST":
-        return "editando item!"
+    umItem = session.query(Item).filter_by(id=item, categoria_id=categoria).one()
+    if umItem is None:
+        return showCategoria(categoria=categoria)
     else:
-        return "mostrar formulario para editar item!"
+        if request.method == 'POST':
+            umItem = Item(nome=request.form['nome'],
+                            descricao=request.form['descricao'],
+                            imagem=request.form['imagem'],
+                            categoria=umaCategoria)
+            session.add(umItem)
+            session.commit()
+            flash("O item foi editado!")
+            return redirect(url_for("showItem", item=newItem.id))
+        else: 
+            return render_template("editItem.html", item=umItem)
 
 
 @app.route("/categorias/<int:categoria>/<int:item>/delete/", methods=["GET", "POST"])
 def deleteItem(categoria, item):
-    if request.method == "POST":
-        return "deletando item!"
+    umItem = session.query(Item).filter_by(id=item, categoria_id=categoria).one()
+    if umItem is None:
+        return showCategoria(categoria=categoria)
     else:
-        return "mostrar formulario para deletar item!"
+        if request.method == 'POST':
+            session.delete(umItem)
+            session.commit()
+            flash("O item foi excluído!")
+            return redirect(url_for("showCategoria", categoria=categoria))
+        else: 
+            return render_template("editItem.html", item=umItem)
 
 
 @app.route('/api/v1/categorias')
 def jsonCategorias():
-    return "mostra as categorias";
+    categorias = session.query(Categoria).all()
+    return jsonify(categorias = [c.serialize for c in categorias])
 
 
 @app.route('/api/v1/categorias/<int:categoria>')
 def jsonCategoria(categoria):
-    return "mostra uma categoria e seus itens";
+    categoria = session.query(Categoria).filter_by(id=categoria).one()
+    return jsonify(categorias = categoria.serialize)
 
 
 @app.route('/api/v1/categorias/<int:categoria>/<int:item>')
 def jsonItem(categoria, item):
-    return "mostra um item de uma categoria";
+    item = session.query(Item).filter_by(id=item, categoria_id=categoria).one()
+    return jsonify(item = item.serialize)
 
 
 if __name__ == '__main__':
