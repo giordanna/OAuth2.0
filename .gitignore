@@ -1,0 +1,4 @@
+.vagrant/
+segredos_cliente.json
+catalogo.db
+configuracao_db.pyc
