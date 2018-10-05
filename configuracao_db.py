@@ -12,40 +12,13 @@ from itsdangerous import(
 )
 
 Base = declarative_base()
-chave_secreta = "".join(random.choice(
-    string.ascii_uppercase + string.digits) for x in xrange(32))
-
 
 class Usuario(Base):
     __tablename__ = "usuario"
     id = Column(Integer, primary_key=True)
+    nome = Column(String)
     email = Column(String, index=True)
-    senha_hash = Column(String(64))
     imagem = Column(String)
-
-    def hash_senha(self, senha):
-        self.senha_hash = pwd_context.encrypt(senha)
-
-    def verificar_senha(self, senha):
-        return pwd_context.verify(senha, self.senha_hash)
-
-    def gerar_token_auth(self, expiration=600):
-        s = Serializer(chave_secreta, expires_in=expiration)
-        return s.dumps({"id": self.id})
-
-    @staticmethod
-    def verificar_token_auth(token):
-        s = Serializer(chave_secreta)
-        try:
-            data = s.loads(token)
-        except SignatureExpired:
-            # Valid Token, but expired
-            return None
-        except BadSignature:
-            # Invalid Token
-            return None
-        usuario_id = data["id"]
-        return usuario_id
 
 
 class Categoria(Base):
@@ -74,6 +47,8 @@ class Item(Base):
     imagem = Column(String)
     categoria_id = Column(Integer, ForeignKey("categoria.id"))
     categoria = relationship(Categoria)
+    usuario_id = Column(Integer, ForeignKey("usuario.id"))
+    usuario = relationship(Usuario)
 
     @property
     def serialize(self):

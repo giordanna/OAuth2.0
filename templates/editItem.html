@@ -2,9 +2,21 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title></title>
+    <link rel="stylesheet" href="{{ url_for("static", filename="styles.css") }}">
+	<title>Editar item | Catálogo</title>
 </head>
 <body>
+	<h1>Editar o item {{ item.nome }} da categoria {{ categoria.nome }}</h1>
+	<p><a href="{{ url_for("showCategoria", categoria=categoria.id) }}">Cancelar</a></p>
+	<form method="POST" enctype="multipart/form-data" action="{{ url_for("editItem", categoria=categoria.id, item=item.id) }}">
 
+        <label>Nome: </label><input name="nome" type="text" value="{{ item.nome }}"><br>
+        <label>Descrição: </label><textarea name="descricao" value="{{ item.descricao }}"></textarea><br>
+        <label>Nova Imagem: </label><input name="imagem" type="file" accept=".jpg,.jpeg,.png,image/jpg,image/jpeg,image/png"><br>
+        Imagem anterior:<br>
+        <img src="{{ item.imagem }}"><br>
+        <input type="submit" value="Atualizar">
+
+    </form>
 </body>
 </html>

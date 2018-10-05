@@ -12,14 +12,8 @@
 	<h1>Catálogo</h1>
 
 	<p>
-		<a href="{{ url_for("logoutUsuario") }}">
-			Logout
-		</a>
-	</p>
-
-	<p>
-		<a href="{{ url_for("newCategoria") }}">
-			<button type="button">Adicionar nova categoria</button>
+		<a href="{{ url_for("loginUsuario") }}">
+			Login
 		</a>
 	</p>
 
@@ -27,16 +21,6 @@
 
 	    <p>
 	    	<a href="{{ url_for("showCategoria", categoria=categoria.id) }}">{{ categoria.nome }}</a>
-	    </p>
-
-	{% endfor %}
-
-	<h2>Itens recentes...</h2>
-
-	{% for item in itens %}
-
-	    <p>
-	    	<a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">{{ item.nome }}</a>
 	    </p>
 
 	{% endfor %}
