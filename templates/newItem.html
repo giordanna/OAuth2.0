@@ -8,7 +8,7 @@
 <body>
 	<h1>Adicionar novo item para a categoria {{ categoria.nome }}</h1>
 	<p><a href="{{ url_for("showCategoria", categoria=categoria.id) }}">Cancelar</a></p>
-	<form method="POST" enctype="multipart/form-data" action="{{ url_for("newitem", categoria=categoria.id) }}">
+	<form method="POST" enctype="multipart/form-data" action="{{ url_for("newItem", categoria=categoria.id) }}">
 
         <label>Nome: </label><input name="nome" type="text"><br>
         <label>Descrição: </label><textarea name="descricao"></textarea><br>

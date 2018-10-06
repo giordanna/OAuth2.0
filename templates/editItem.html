@@ -6,12 +6,12 @@
 	<title>Editar item | Catálogo</title>
 </head>
 <body>
-	<h1>Editar o item {{ item.nome }} da categoria {{ categoria.nome }}</h1>
-	<p><a href="{{ url_for("showCategoria", categoria=categoria.id) }}">Cancelar</a></p>
-	<form method="POST" enctype="multipart/form-data" action="{{ url_for("editItem", categoria=categoria.id, item=item.id) }}">
+	<h1>Editar o item {{ item.nome }}?</h1>
+	<p><a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">Cancelar</a></p>
+	<form method="POST" enctype="multipart/form-data" action="{{ url_for("editItem", categoria=item.categoria_id, item=item.id) }}">
 
         <label>Nome: </label><input name="nome" type="text" value="{{ item.nome }}"><br>
-        <label>Descrição: </label><textarea name="descricao" value="{{ item.descricao }}"></textarea><br>
+        <label>Descrição: </label><textarea name="descricao">{{ item.descricao }}</textarea><br>
         <label>Nova Imagem: </label><input name="imagem" type="file" accept=".jpg,.jpeg,.png,image/jpg,image/jpeg,image/png"><br>
         Imagem anterior:<br>
         <img src="{{ item.imagem }}"><br>

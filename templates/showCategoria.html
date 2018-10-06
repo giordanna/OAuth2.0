@@ -11,16 +11,19 @@
 
 	<h1>{{ categoria.nome }}</h1>
 
-	<p>
-		<a href="{{ url_for("editCategoria", categoria=categoria.id) }}">Editar</a> |
-		<a href="{{ url_for("deleteCategoria", categoria=categoria.id) }}">Excluir</a>
-	</p>
+	{% if categoria.usuario_id == usuario_id %}
+		<p>
+			<a href="{{ url_for("editCategoria", categoria=categoria.id) }}">Editar</a> |
+			<a href="{{ url_for("deleteCategoria", categoria=categoria.id) }}">Excluir</a>
+		</p>
 
-	<p>
-		<a href="{{ url_for("newItem", categoria=categoria.id) }}">
-			<button type="button">Adicionar novo item</button>
-		</a>
-	</p>
+		<p>
+			<a href="{{ url_for("newItem", categoria=categoria.id) }}">
+				<button type="button">Adicionar novo item</button>
+			</a>
+		</p>
+
+	{% endif %}
 
 	{% for item in itens %}
 

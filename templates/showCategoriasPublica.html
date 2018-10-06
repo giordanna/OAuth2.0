@@ -25,5 +25,15 @@
 
 	{% endfor %}
 
+	<h2>Itens recentes...</h2>
+
+	{% for item in itens %}
+
+	    <p>
+	    	<a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">{{ item.nome }}</a>
+	    </p>
+
+	{% endfor %}
+
 </body>
 </html>
