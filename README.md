@@ -1,6 +1,6 @@
 # Catálogo
 Quarto projeto do curso nanodegree da Udacity de Desenvolvedor Full-stack.
-Este projeto é um pequeno é um pequeno servidor em python, utilizando o framework Flask, que hospeda um serviço de registro de catálogo, onde o usuário deve logar com uma conta Google+ para adicionar categorias e itens. Há também alguns endpoints de API.
+Este projeto é um pequeno servidor em python, utilizando o framework Flask e SQLAlchemy, que hospeda um serviço de registro de catálogo, onde o usuário deve logar com uma conta Google+ para adicionar categorias e itens. Há também alguns endpoints de API.
 
 ### Importante
 Este projeto utiliza ID de cliente OAuth 2.0 do Google, o qual está em um arquivo nomeado para o projeto `segredos_cliente.json`, porém não está à mostra neste repositório por questões de segurança. Para obter um ID de cliente acesse a aba Credenciais em https://console.developers.google.com/apis/.
