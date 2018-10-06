@@ -352,18 +352,36 @@ def deleteItem(categoria, item):
 @app.route("/api/v1/categorias")
 def jsonCategorias():
     categorias = session.query(Categoria).all()
-    return jsonify(categorias = [c.serialize for c in categorias])
+    categoriasSerializadas = []
+    for c in categorias:
+        itens = session.query(Item).filter_by(categoria_id=c.id).all()
+        itensSerializados = []
+        for i in itens:
+            itensSerializados.append(i.serialize)
+        categoriaSerializada = c.serialize
+        categoriaSerializada["itens"] = itensSerializados
+        categoriasSerializadas.append(categoriaSerializada)
+    
+    return jsonify(categorias = categoriasSerializadas)
 
 
 @app.route("/api/v1/categorias/<int:categoria>")
 def jsonCategoria(categoria):
     categoria = session.query(Categoria).filter_by(id=categoria).one()
-    return jsonify(categorias = categoria.serialize)
+    itens = session.query(Item).filter_by(categoria_id=categoria.id).all()
+    itensSerializados = []
+    for i in itens:
+        itensSerializados.append(i.serialize)
+    categoriaSerializada = categoria.serialize
+    categoriaSerializada["itens"] = itensSerializados
+
+    return jsonify(categoria = categoriaSerializada)
 
 
 @app.route("/api/v1/categorias/<int:categoria>/<int:item>")
 def jsonItem(categoria, item):
     item = session.query(Item).filter_by(id=item, categoria_id=categoria).one()
+    
     return jsonify(item = item.serialize)
 
 
