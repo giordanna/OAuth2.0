@@ -1,32 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<link rel="stylesheet" href="{{ url_for("static", filename="styles.css") }}">
+	
+	{% include "headImportacoes.html" %}
+	
 	<title>{{ item.nome }}  | Catálogo</title>
 </head>
 <body>
+
+	{% include "cabecalho.html" %}
+
+	<main role="main" class="container">
 	
-	{% include "showMensagens.html" %}
+		{% include "showMensagens.html" %}
 
-	<h1>{{ item.nome }}</h1>
+		<h1>{{ item.nome }}</h1>
 
-	<p>{{ item.descricao }}</p>
+		<p>{{ item.descricao }}</p>
 
-	<img width="100%" src="/static/img/{{ item.imagem }}">
+		<img width="100%" src="/static/img/{{ item.imagem }}">
 
-	{% if item.usuario_id == usuario_id %}
+		{% if item.usuario_id == usuario_id %}
+			<p>
+				<a href="{{ url_for("editItem", categoria=item.categoria_id, item=item.id) }}">Editar</a> |
+				<a href="{{ url_for("deleteItem", categoria=item.categoria_id, item=item.id) }}">Excluir</a>
+			</p>
+		{% endif %}
+		
 		<p>
-			<a href="{{ url_for("editItem", categoria=item.categoria_id, item=item.id) }}">Editar</a> |
-			<a href="{{ url_for("deleteItem", categoria=item.categoria_id, item=item.id) }}">Excluir</a>
+			<a href="{{ url_for("showCategoria", categoria=item.categoria_id) }}">
+				<button type="button">Voltar a categoria...</button>
+			</a>
 		</p>
-	{% endif %}
-	
-	<p>
-		<a href="{{ url_for("showCategoria", categoria=item.categoria_id) }}">
-			<button type="button">Voltar a categoria...</button>
-		</a>
-	</p>
+
+	</main>
+
+	{% include "rodape.html" %}
 
 </body>
 </html>

@@ -317,7 +317,7 @@ def newItem(categoria):
         session.commit()
 
         # se o usuário enviar uma imagem
-        if "imagem" in request.files:
+        if "imagem" in request.files and request.files["imagem"].filename != "" and request.files["imagem"]:
             arquivo = request.files["imagem"]
             tipo_imagem = arquivo.filename.rsplit(".", 1)[1].lower()
             imagem_nome = hashlib.sha1(str(item_id)).hexdigest() + "." + tipo_imagem

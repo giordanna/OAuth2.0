@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-    <link rel="stylesheet" href="{{ url_for("static", filename="styles.css") }}">
+
+    {% include "headImportacoes.html" %}
+	
 	<title>Excluir item | Catálogo</title>
 </head>
 <body>
-	<h1>Tem certeza que deseja excluir o item {{ item.nome }}?</h1>
-	<p><a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">Cancelar</a></p>
-	<form method="POST" enctype="multipart/form-data" action="{{ url_for("deleteItem", categoria=item.categoria_id, item=item.id) }}">
 
-        <input type="submit" value="Excluir">
+	{% include "cabecalho.html" %}
 
-    </form>
+	<main role="main" class="container">
+
+		<h1>Tem certeza que deseja excluir o item {{ item.nome }}?</h1>
+		<p><a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">Cancelar</a></p>
+		<form method="POST" enctype="multipart/form-data" action="{{ url_for("deleteItem", categoria=item.categoria_id, item=item.id) }}">
+
+	        <input type="submit" value="Excluir">
+
+	    </form>
+
+	</main>
+
+	{% include "rodape.html" %}
 </body>
 </html>

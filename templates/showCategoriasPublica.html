@@ -1,39 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<link rel="stylesheet" href="{{ url_for("static", filename="styles.css") }}">
+	
+	{% include "headImportacoes.html" %}
+	
 	<title>Catálogo</title>
 </head>
 <body>
 
+	{% include "cabecalhoPublica.html" %}
+
 	{% include "showMensagens.html" %}
 
-	<h1>Catálogo</h1>
+	<main role="main" class="container">
 
-	<p>
-		<a href="{{ url_for("loginUsuario") }}">
-			Login
-		</a>
-	</p>
+		<h1>Catálogo</h1>
 
-	{% for categoria in categorias %}
+		<p>
+			<a href="{{ url_for("loginUsuario") }}">
+				Login
+			</a>
+		</p>
 
-	    <p>
-	    	<a href="{{ url_for("showCategoria", categoria=categoria.id) }}">{{ categoria.nome }}</a>
-	    </p>
+		{% for categoria in categorias %}
 
-	{% endfor %}
+		    <p>
+		    	<a href="{{ url_for("showCategoria", categoria=categoria.id) }}">{{ categoria.nome }}</a>
+		    </p>
 
-	<h2>Itens recentes...</h2>
+		{% endfor %}
 
-	{% for item in itens %}
+		<h2>Itens recentes...</h2>
 
-	    <p>
-	    	<a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">{{ item.nome }}</a>
-	    </p>
+		{% for item in itens %}
 
-	{% endfor %}
+		    <p>
+		    	<a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">{{ item.nome }}</a>
+		    </p>
+
+		{% endfor %}
+
+	</main>
+
+	{% include "rodape.html" %}
 
 </body>
 </html>

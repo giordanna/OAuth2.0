@@ -1,45 +1,54 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<link rel="stylesheet" href="{{ url_for("static", filename="styles.css") }}">
+	
+	{% include "headImportacoes.html" %}
+	
 	<title>{{ categoria.nome }} | Catálogo</title>
 </head>
 <body>
+
+	{% include "cabecalho.html" %}
+
+	<main role="main" class="container">
 	
-	{% include "showMensagens.html" %}
+		{% include "showMensagens.html" %}
 
-	<h1>{{ categoria.nome }}</h1>
+		<h1>{{ categoria.nome }}</h1>
 
-	{% if categoria.usuario_id == usuario_id %}
-		<p>
-			<a href="{{ url_for("editCategoria", categoria=categoria.id) }}">Editar</a> |
-			<a href="{{ url_for("deleteCategoria", categoria=categoria.id) }}">Excluir</a>
-		</p>
+		{% if categoria.usuario_id == usuario_id %}
+			<p>
+				<a href="{{ url_for("editCategoria", categoria=categoria.id) }}">Editar</a> |
+				<a href="{{ url_for("deleteCategoria", categoria=categoria.id) }}">Excluir</a>
+			</p>
 
-		<p>
-			<a href="{{ url_for("newItem", categoria=categoria.id) }}">
-				<button type="button">Adicionar novo item</button>
-			</a>
-		</p>
+			<p>
+				<a href="{{ url_for("newItem", categoria=categoria.id) }}">
+					<button type="button">Adicionar novo item</button>
+				</a>
+			</p>
 
-	{% endif %}
+		{% endif %}
 
-	{% for item in itens %}
+		{% for item in itens %}
 
-	    <p>
-	    	<a href="{{ url_for("showItem", categoria=categoria.id, item=item.id) }}">{{ item.nome }}</a>
-	    </p>
+		    <p>
+		    	<a href="{{ url_for("showItem", categoria=categoria.id, item=item.id) }}">{{ item.nome }}</a>
+		    </p>
 
-	{% endfor %}
+		{% endfor %}
 
-	<h3>Lista de Categorias...</h3>
+		<h3>Lista de Categorias...</h3>
 
-	{% for c in categorias %}
+		{% for c in categorias %}
 
-		<a href="{{ url_for("showCategoria", categoria=c.id) }}">{{ c.nome }}</a>
+			<a href="{{ url_for("showCategoria", categoria=c.id) }}">{{ c.nome }}</a>
 
-	{% endfor %}
+		{% endfor %}
+
+	</main>
+
+	{% include "rodape.html" %}
 
 </body>
 </html>
