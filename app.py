@@ -20,10 +20,11 @@ from flask import session as login_session
 import requests
 import random
 import string
+import hashlib
+import os
+from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
 
-
-DIRETORIO_UPLOAD = "/img"
-EXTENSOES_PERMITIDAS = set(["png", "jpg", "jpeg"])
+DIRETORIO_UPLOAD = "static/img"
 
 auth = HTTPBasicAuth()
 
@@ -31,7 +32,10 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
 app = Flask(__name__)
-app.config["UPLOAD_FOLDER"] = DIRETORIO_UPLOAD
+
+imagemUpload = UploadSet("imagem", IMAGES)
+app.config["UPLOADED_IMAGEM_DEST"] = DIRETORIO_UPLOAD
+configure_uploads(app, imagemUpload)
 
 
 ID_CLIENTE = json.loads(
@@ -262,6 +266,14 @@ def deleteCategoria(categoria):
         return showCategoria(categoria=umaCategoria.id)
 
     if request.method == "POST":
+        itens = session.query(Item).filter_by(categoria_id=categoria).all()
+        for i in itens:
+            if i.imagem != "item_sem_imagem.png":
+                try:
+                    os.remove(os.path.join(app.config["UPLOADED_IMAGEM_DEST"], i.imagem))
+                except OSError:
+                    pass
+
         session.query(Item).filter_by(categoria_id=categoria).delete()
         session.delete(umaCategoria)
         session.commit()
@@ -293,13 +305,27 @@ def newItem(categoria):
 
     if request.method == "POST":
         umUsuario = getUsuario(login_session["usuario_id"])
+
         newItem = Item(nome=request.form["nome"],
                         descricao=request.form["descricao"],
-                        imagem="",
+                        imagem="item_sem_imagem.png",
                         categoria=umaCategoria,
                         usuario=umUsuario)
         session.add(newItem)
+        session.flush()
+        item_id = newItem.id
         session.commit()
+
+        # se o usuário enviar uma imagem
+        if "imagem" in request.files:
+            arquivo = request.files["imagem"]
+            tipo_imagem = arquivo.filename.rsplit(".", 1)[1].lower()
+            imagem_nome = hashlib.sha1(str(item_id)).hexdigest() + "." + tipo_imagem
+            imagemUpload.save(arquivo, name=imagem_nome)
+            newItem.imagem = imagem_nome
+            session.add(newItem)
+            session.commit()
+
         flash("Novo item criado!")
         return redirect(url_for("showCategoria", categoria=categoria))
     else: 
@@ -318,9 +344,24 @@ def editItem(categoria, item):
         return showCategoria(categoria=categoria)
 
     if request.method == "POST":
-        umItem = Item(nome=request.form["nome"],
-                        descricao=request.form["descricao"],
-                        imagem="")
+
+        # se o usuário enviar uma imagem
+        if "imagem" in request.files:
+            arquivo = request.files["imagem"]
+            if umItem.imagem != "item_sem_imagem.png":
+                try:
+                    os.remove(os.path.join(app.config["UPLOADED_IMAGEM_DEST"], umItem.imagem))
+                except OSError:
+                    pass
+            else:
+                tipo_imagem = arquivo.filename.rsplit(".", 1)[1].lower()
+                imagem_nome = hashlib.sha1(str(item_id)).hexdigest() + "." + tipo_imagem
+                umItem.imagem = imagem_nome
+
+            imagemUpload.save(arquivo, name=umItem.imagem)
+
+        umItem.nome = request.form["nome"]
+        umItem.descricao = request.form["descricao"]
         session.add(umItem)
         session.commit()
         flash("O item foi editado!")
@@ -341,6 +382,11 @@ def deleteItem(categoria, item):
         return showCategoria(categoria=categoria)
 
     if request.method == "POST":
+        if umItem.imagem != "item_sem_imagem.png":
+            try:
+                os.remove(os.path.join(app.config["UPLOADED_IMAGEM_DEST"], umItem.imagem))
+            except OSError:
+                pass
         session.delete(umItem)
         session.commit()
         flash(u"O item foi excluído!")

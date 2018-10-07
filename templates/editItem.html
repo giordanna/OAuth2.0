@@ -14,7 +14,7 @@
         <label>Descrição: </label><textarea name="descricao">{{ item.descricao }}</textarea><br>
         <label>Nova Imagem: </label><input name="imagem" type="file" accept=".jpg,.jpeg,.png,image/jpg,image/jpeg,image/png"><br>
         Imagem anterior:<br>
-        <img src="{{ item.imagem }}"><br>
+        <img width="100%" src="/static/img/{{ item.imagem }}"><br>
         <input type="submit" value="Atualizar">
 
     </form>
