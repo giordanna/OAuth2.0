@@ -10,25 +10,32 @@
 
 	{% include "cabecalhoPublica.html" %}
 
-	{% include "showMensagens.html" %}
-
 	<main role="main" class="container">
+
+		{% include "showMensagens.html" %}
 
 		<h1>Catálogo</h1>
 
-		<p>
-			<a href="{{ url_for("loginUsuario") }}">
-				Login
-			</a>
-		</p>
-
-		{% for categoria in categorias %}
-
-		    <p>
-		    	<a href="{{ url_for("showCategoria", categoria=categoria.id) }}">{{ categoria.nome }}</a>
-		    </p>
-
-		{% endfor %}
+		<div class="container-fluid">
+			<div class="row">
+				<nav class="col-md-2 d-none d-md-block bg-light sidebar">
+					<div class="sidebar-sticky">
+						<ul class="nav flex-column">
+							<li class="nav-item">
+								Categorias:
+							</li>
+								{% for categoria in categorias %}
+									<li class="nav-item">
+										<a class="nav-link" href="{{ url_for("showCategoria", categoria=categoria.id) }}">
+											{{ categoria.nome }}
+										</a>
+									</li>
+								{% endfor %}
+						</ul>
+					</div>
+				</nav>
+			</div>
+		</div>
 
 		<h2>Itens recentes...</h2>
 

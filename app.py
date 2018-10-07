@@ -3,14 +3,13 @@
 
 from configuracao_db import Base, Usuario, Categoria, Item, engine
 from flask import (
-    Flask, jsonify, request, url_for,
-    abort, g, render_template, flash, redirect
+    Flask, jsonify, request, url_for, g,
+    render_template, flash, redirect
 )
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from flask.ext.httpauth import HTTPBasicAuth
-from werkzeug.utils import secure_filename
 import json
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -144,7 +143,7 @@ def loginUsuario():
         output += "<img src='"
         output += login_session["imagem"]
         output += "' style = 'width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;'> "
-        flash("you are now logged in as %s" % login_session["nome"])
+        flash(u"Você está logado como %s" % login_session["nome"])
         print "done!"
         return output
     else:
@@ -153,22 +152,17 @@ def loginUsuario():
         login_session["state"] = state
         return render_template("loginUsuario.html", id_cliente=ID_CLIENTE, state=state)
 
+
 @app.route("/logout/")
 def logoutUsuario():
     access_token = login_session.get("access_token")
     if access_token is None:
-        print "Access Token is None"
-        response = make_response(json.dumps("Current user not connected."), 401)
-        response.headers["Content-Type"] = "application/json"
-        return response
-    print "In gdisconnect access token is %s", access_token
-    print "User name is: "
-    print login_session["nome"]
+        flash(u"Usuário não conectado.")
+        return redirect(url_for("showCategorias"))
+
     url = "https://accounts.google.com/o/oauth2/revoke?token=%s" % login_session["access_token"]
     h = httplib2.Http()
     result = h.request(url, "GET")[0]
-    print "result is "
-    print result
     if result["status"] == "200":
         del login_session["access_token"]
         del login_session["gplus_id"]
@@ -176,12 +170,11 @@ def logoutUsuario():
         del login_session["email"]
         del login_session["imagem"]
         del login_session["usuario_id"]
-        response = make_response(json.dumps("Successfully disconnected."), 200)
-        response.headers["Content-Type"] = "application/json"
+        flash(u"Usuário desconectado com sucesso.")
     else:
-        response = make_response(json.dumps("Failed to revoke token for given user.", 400))
-        response.headers["Content-Type"] = "application/json"
-    return response
+        flash(u"Falha ao tentar desconectar usuário.")
+
+    return redirect(url_for("showCategorias"))
 
 def newUsuario(login_session):
     newUsuario = Usuario(nome=login_session["nome"],
@@ -355,7 +348,7 @@ def editItem(categoria, item):
                     pass
             else:
                 tipo_imagem = arquivo.filename.rsplit(".", 1)[1].lower()
-                imagem_nome = hashlib.sha1(str(item_id)).hexdigest() + "." + tipo_imagem
+                imagem_nome = hashlib.sha1(str(umItem.id)).hexdigest() + "." + tipo_imagem
                 umItem.imagem = imagem_nome
 
             imagemUpload.save(arquivo, name=umItem.imagem)

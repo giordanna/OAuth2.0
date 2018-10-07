@@ -18,7 +18,7 @@
 
 		<p>{{ item.descricao }}</p>
 
-		<img width="100%" src="/static/img/{{ item.imagem }}">
+		<img width="100%" src="{{ url_for("static", filename="img/" + item.imagem) }}">
 
 		{% if item.usuario_id == usuario_id %}
 			<p>

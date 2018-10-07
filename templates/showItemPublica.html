@@ -4,7 +4,7 @@
 	
 	{% include "headImportacoes.html" %}
 	
-	<title>{{ categoria.nome }}  | Catálogo</title>
+	<title>{{ item.nome }}  | Catálogo</title>
 </head>
 <body>
 
@@ -18,7 +18,7 @@
 
 		<p>{{ item.descricao }}</p>
 
-		<img src="{{ item.imagem }}">
+		<img src="{{ url_for("static", filename="img/" + item.imagem) }}">
 
 		<p>
 			<a href="{{ url_for("showCategoria", categoria=item.categoria_id) }}">
