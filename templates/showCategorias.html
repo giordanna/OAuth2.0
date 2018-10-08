@@ -10,52 +10,64 @@
 
 	{% include "cabecalho.html" %}
 
-	<main role="main" class="container">
+	{% include "showMensagens.html" %}
 
-		{% include "showMensagens.html" %}
-
-		<h1>Catálogo</h1>
-
-		<p>
-			<a href="{{ url_for("newCategoria") }}">
-				<button type="button">Adicionar nova categoria</button>
-			</a>
-		</p>
-
-		<div class="container-fluid">
-			<div class="row">
-				<nav class="col-md-2 d-none d-md-block bg-light sidebar">
-					<div class="sidebar-sticky">
-						<ul class="nav flex-column">
-							<li class="nav-item">
-								Categorias:
+    <main class="container">
+        <div class="columns">
+            <div class="column is-3" >
+                <aside class="menu">
+                    <p class="menu-label">
+                        Categorias
+                    </p>
+                    <ul class="menu-list">
+                        {% for categoria in categorias %}
+	                        <li>
+								<a href="{{ url_for("showCategoria", categoria=categoria.id) }}">
+									{{ categoria.nome }}
+								</a>
 							</li>
-								{% for categoria in categorias %}
-									<li class="nav-item">
-										<a class="nav-link" href="{{ url_for("showCategoria", categoria=categoria.id) }}">
-											{{ categoria.nome }}
-										</a>
-									</li>
-								{% endfor %}
-						</ul>
-					</div>
-				</nav>
-			</div>
-		</div>
+						{% endfor %}
+                    </ul>
+                </aside>
+            </div>
+            <div class="column is-9">
 
-		<h2>Itens recentes...</h2>
-
-		{% for item in itens %}
-
-		    <p>
-		    	<a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">{{ item.nome }}</a>
-		    </p>
-
-		{% endfor %}
-
+            	<p>
+					<a href="{{ url_for("newCategoria") }}" class="box is-primary is-medium has-text-centered">
+						Adicionar nova categoria
+					</a>
+				</p>
+				<br>
+               
+                <section class="hero is-info welcome is-small">
+                    <div class="hero-body">
+                        <div class="container">
+                            <h1 class="title">
+                                Catálogo
+                            </h1>
+                            <h2 class="subtitle">
+                                Itens recentes
+                            </h2>
+                        </div>
+                    </div>
+                </section>           
+		
+                <section class="info-tiles">
+                    <div class="tile is-ancestor has-text-centered">
+                    	{% for item in itens %}
+	                        <div class="tile is-parent">
+                        		<article class="tile is-child box">
+                        			<p><img width="25%" src="{{ url_for("static", filename="img/" + item.imagem) }}"></p>
+									<p class="subtitle">
+										<a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">{{ item.nome }}</a>
+									</p>
+							    </article>
+	                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+        </div>
 	</main>
-
-	{% include "rodape.html" %}
-
 </body>
 </html>

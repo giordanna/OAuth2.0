@@ -1,9 +1,45 @@
+<!-- template: https://dansup.github.io/bulma-templates/templates/admin.html -->
 <header>
-	<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 px-5">
-		<a class="navbar-brand mr-auto" href="/">Catálogo</a>
+	<!-- START NAV -->
+	<nav class="navbar is-white">
+            <div class="navbar-brand">
+                <a class="navbar-item brand-text" href="/">
+		         	Catálogo
+		        </a>
 
-		<a href="{{ url_for("logoutUsuario") }}"><button class="btn btn-outline-danger my-2 my-sm-0" type="button">Logout</button></a>
-	</nav>
+		       <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu">
+			      <span aria-hidden="true"></span>
+			      <span aria-hidden="true"></span>
+			      <span aria-hidden="true"></span>
+			    </a>
+		  	</div>
+
+	        <div id="navMenu" class="navbar-menu">
+                <div class="navbar-end">
+                    <div class="navbar-item">
+	            		<div class="buttons">
+	            			<a class="button is-primary" href="{{ url_for("logoutUsuario") }}">
+	            				<span>
+	            					Logout
+	            				</span>
+	            			</a>
+	            		</div>
+	            	</div>
+                </div>
+            </div>
+    </nav>
 </header>
 
-	
+<script>
+	$(document).ready(function() {
+
+	  // Check for click events on the navbar burger icon
+	  $(".navbar-burger").click(function() {
+
+	      // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+	      $(".navbar-burger").toggleClass("is-active");
+	      $(".navbar-menu").toggleClass("is-active");
+
+	  });
+	});
+</script>
