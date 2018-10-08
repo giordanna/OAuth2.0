@@ -13,7 +13,7 @@
 		<h1>Tem certeza que deseja excluir a categoria {{ categoria.nome }} e todos os seus itens?</h1>
 		<p><a href="{{ url_for("showCategorias") }}">Cancelar</a></p>
 		<form method="POST" enctype="multipart/form-data" action="{{ url_for("deleteCategoria", categoria=categoria.id) }}">
-
+			{{ form.csrf_token }}
 	        <input type="submit" value="Excluir">
 
 	    </form>

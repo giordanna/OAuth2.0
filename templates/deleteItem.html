@@ -15,7 +15,7 @@
 		<h1>Tem certeza que deseja excluir o item {{ item.nome }}?</h1>
 		<p><a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">Cancelar</a></p>
 		<form method="POST" enctype="multipart/form-data" action="{{ url_for("deleteItem", categoria=item.categoria_id, item=item.id) }}">
-
+			{{ form.csrf_token }}
 	        <input type="submit" value="Excluir">
 
 	    </form>

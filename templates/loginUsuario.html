@@ -47,6 +47,7 @@
 		function signInSuccess(authResult) {
 
 			// Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
+
 			$.ajax({
 				type: 'POST',
 				url: '{{ url_for("loginUsuario") }}?state={{state}}',

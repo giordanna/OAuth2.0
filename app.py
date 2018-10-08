@@ -22,6 +22,7 @@ import string
 import hashlib
 import os
 from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
+from flask_wtf.csrf import CSRFProtect
 
 DIRETORIO_UPLOAD = "static/img"
 
@@ -31,6 +32,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
 app = Flask(__name__)
+csrf = CSRFProtect(app)
 
 imagemUpload = UploadSet("imagem", IMAGES)
 app.config["UPLOADED_IMAGEM_DEST"] = DIRETORIO_UPLOAD
@@ -57,6 +59,7 @@ def showCategorias():
 
 
 @app.route("/login/", methods=["GET", "POST"])
+@csrf.exempt
 def loginUsuario():
     if request.method == "POST":
         # Validate state token
@@ -129,20 +132,20 @@ def loginUsuario():
         login_session["imagem"] = data["picture"]
         login_session["email"] = data["email"]
 
-        output = ""
+        output = "<div align='center'>"
 
         if not getUsuarioId(login_session["email"]):
             login_session["usuario_id"] = newUsuario(login_session)
-            output += "<h1>Welcome, "
+            output += "<h1>Bem vindo(a), "
         else:
             login_session["usuario_id"] = getUsuarioId(login_session["email"])
-            output += "<h1>Welcome back, "
+            output += "<h1>Bem vindo(a) de volta, "
  
         output += login_session["nome"]
         output += "!</h1>"
         output += "<img src='"
         output += login_session["imagem"]
-        output += "' style = 'width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;'> "
+        output += "' style = 'width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;'></div>"
         flash(u"Você está logado como %s" % login_session["nome"])
         print "done!"
         return output
@@ -155,6 +158,7 @@ def loginUsuario():
 
 @app.route("/logout/")
 def logoutUsuario():
+
     access_token = login_session.get("access_token")
     if access_token is None:
         flash(u"Usuário não conectado.")
@@ -173,8 +177,9 @@ def logoutUsuario():
         flash(u"Usuário desconectado com sucesso.")
     else:
         flash(u"Falha ao tentar desconectar usuário.")
+        return redirect(url_for("showCategorias"))
 
-    return redirect(url_for("showCategorias"))
+    return render_template("logoutUsuario.html", id_cliente=ID_CLIENTE)
 
 def newUsuario(login_session):
     newUsuario = Usuario(nome=login_session["nome"],
@@ -427,4 +432,5 @@ def jsonItem(categoria, item):
 if __name__ == "__main__":
     app.secret_key = "super_chave_secreta"
     app.debug = True
+    csrf.init_app(app)
     app.run(host="0.0.0.0", port=5000)

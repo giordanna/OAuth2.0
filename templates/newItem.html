@@ -15,7 +15,7 @@
 		<h1>Adicionar novo item para a categoria {{ categoria.nome }}</h1>
 		<p><a href="{{ url_for("showCategoria", categoria=categoria.id) }}">Cancelar</a></p>
 		<form method="POST" enctype="multipart/form-data" action="{{ url_for("newItem", categoria=categoria.id) }}">
-
+			{{ form.csrf_token }}
 	        <label>Nome: </label><input name="nome" type="text"><br>
 	        <label>Descrição: </label><textarea name="descricao"></textarea><br>
 	        <label>Imagem: </label><input name="imagem" type="file" accept=".jpg,.jpeg,.png,image/jpg,image/jpeg,image/png"><br>

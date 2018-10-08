@@ -15,7 +15,7 @@
 		<h1>Adicionar nova categoria</h1>
 		<p><a href="{{ url_for("showCategorias") }}">Cancelar</a></p>
 		<form method="POST" enctype="multipart/form-data" action="{{ url_for("newCategoria") }}">
-
+			{{ form.csrf_token }}
 	        <label>Nome: </label><input name="nome" type="text"><br>
 	        <input type="submit" value="Enviar">
 
