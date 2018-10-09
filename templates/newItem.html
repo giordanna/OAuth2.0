@@ -1,29 +1,80 @@
-<!DOCTYPE html>
-<html>
-<head>
-	
-	{% include "headImportacoes.html" %}
+{% extends "layoutPrincipal.html" %}
 
-	<title>Adicionar novo item | Catálogo</title>
-</head>
-<body>
+{% block tituloSite %}
+	Adicionar item | Catálogo
+{% endblock %}
 
+{% block inserirCabecalho %}
 	{% include "cabecalho.html" %}
+{% endblock %}
 
-	<main role="main" class="container">
-	
-		<h1>Adicionar novo item para a categoria {{ categoria.nome }}</h1>
-		<p><a href="{{ url_for("showCategoria", categoria=categoria.id) }}">Cancelar</a></p>
-		<form method="POST" enctype="multipart/form-data" action="{{ url_for("newItem", categoria=categoria.id) }}">
-			{{ form.csrf_token }}
-	        <label>Nome: </label><input name="nome" type="text"><br>
-	        <label>Descrição: </label><textarea name="descricao"></textarea><br>
-	        <label>Imagem: </label><input name="imagem" type="file" accept=".jpg,.jpeg,.png,image/jpg,image/jpeg,image/png"><br>
-	        <input type="submit" value="Enviar">
 
-    	</form>
+{% block conteudoPrincipal %}
+	<div class="column is-three-fifths is-offset-one-fifth">
+{% endblock %}
 
-    </main>
 
-</body>
-</html>
+{% block tituloPagina %}
+	Adicionar item para a categoria {{ categoria.nome }}
+{% endblock %}
+
+{% block listaItens %}
+		<div class="tile is-parent">
+			<div class="tile is-child">
+				<form method="POST" enctype="multipart/form-data" action=""{{ url_for("newItem", categoria=categoria.id) }}">
+					<div class="field">
+						<label class="label">Nome:</label>
+						<div class="control">
+							<input name="nome" required class="input is-medium" type="text"><br>
+						</div>
+					</div>
+					<div class="field">
+						<label class="label">Descrição:</label>
+						<div class="control">
+							<textarea name="descricao" required class="textarea is-medium"></textarea>
+						</div>
+					</div>
+					<div class="field">
+						<div class="file is-centered is-boxed is-info has-name">
+							<label class="file-label">
+								<input class="file-input" onchange="mudarNome(this, nomeArquivo)" type="file" name="imagem" accept=".jpg,.jpeg,.png,image/jpg,image/jpeg,image/png">
+								<span class="file-cta">
+									<span class="file-icon">
+										<i class="fas fa-upload"></i>
+									</span>
+									<span class="file-label">
+										Envie uma imagem
+									</span>
+								</span>
+								<span id="nomeArquivo" class="file-name">
+									Sem envio...
+								</span>
+							</label>
+						</div>
+					</div>
+					<div class="field is-grouped">
+						<div class="control">
+							<button type="submit" class="button is-success is-medium">Enviar</button>
+						</div>
+						<div class="control">
+							<a href="{{ url_for("showCategoria", categoria=categoria.id) }}">
+								<button type="button" class="button is-text is-medium">Cancelar</button>
+							</a>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div> <!-- <div column is-three-fifths is-offset-one-fifth> -->
+
+<script>
+	function mudarNome(arquivo, obj) {
+		if (arquivo.files[0].name != "") {
+			obj.innerHTML = arquivo.files[0].name;
+		}
+		else {
+			obj.innerHTML = "Sem envio...";
+		}
+	}
+</script>
+{% endblock %}

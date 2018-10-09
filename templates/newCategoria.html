@@ -1,27 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head>
-	
-	{% include "headImportacoes.html" %}
-	
-	<title>Adicionar categoria | Catálogo</title>
-</head>
-<body>
+{% extends "layoutPrincipal.html" %}
 
+{% block tituloSite %}
+	Adicionar nova categoria | Catálogo
+{% endblock %}
+
+{% block inserirCabecalho %}
 	{% include "cabecalho.html" %}
+{% endblock %}
 
-	<main role="main" class="container">
 
-		<h1>Adicionar nova categoria</h1>
-		<p><a href="{{ url_for("showCategorias") }}">Cancelar</a></p>
-		<form method="POST" enctype="multipart/form-data" action="{{ url_for("newCategoria") }}">
-			{{ form.csrf_token }}
-	        <label>Nome: </label><input name="nome" type="text"><br>
-	        <input type="submit" value="Enviar">
+{% block conteudoPrincipal %}
+	<div class="column is-three-fifths is-offset-one-fifth">
+{% endblock %}
 
-	    </form>
 
-	</main>
-	
-</body>
-</html>
+{% block tituloPagina %}
+	Adicionar categoria
+{% endblock %}
+
+{% block listaItens %}
+		<div class="tile is-parent">
+			<div class="tile is-child">
+				<form method="POST" enctype="multipart/form-data" action="{{ url_for("newCategoria") }}">
+					<div class="field">
+						<label class="label">Nome:</label>
+						<div class="control">
+							<input name="nome" required class="input is-medium" type="text"><br>
+						</div>
+					</div>
+					<div class="field is-grouped">
+						<div class="control">
+							<button type="submit" class="button is-success is-medium">Enviar</button>
+						</div>
+						<div class="control">
+							<a href="{{ url_for("showCategorias") }}">
+								<button type="button" class="button is-text is-medium">Cancelar</button>
+							</a>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div> <!-- <div column is-three-fifths is-offset-one-fifth> -->
+{% endblock %}

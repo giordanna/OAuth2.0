@@ -1,27 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends "layoutPrincipal.html" %}
 
-    {% include "headImportacoes.html" %}
-	
-	<title>Editar categoria | Catálogo</title>
-</head>
-<body>
+{% block tituloSite %}
+	Editar categoria | Catálogo
+{% endblock %}
 
+{% block inserirCabecalho %}
 	{% include "cabecalho.html" %}
+{% endblock %}
 
-	<main role="main" class="container">
 
-		<h1>Editar categoria</h1>
-		<p><a href="{{ url_for("showCategoria", categoria=categoria.id) }}">Cancelar</a></p>
-		<form method="POST" enctype="multipart/form-data" action="{{ url_for("editCategoria", categoria=categoria.id) }}">
-			{{ form.csrf_token }}
-	        <label>Nome: </label><input name="nome" type="text" value="{{ categoria.nome }}"><br>
-	        <input type="submit" value="Atualizar">
+{% block conteudoPrincipal %}
+	<div class="column is-three-fifths is-offset-one-fifth">
+{% endblock %}
 
-	    </form>
 
-	</main>
+{% block tituloPagina %}
+	Editar a categoria {{ categoria.nome }}
+{% endblock %}
 
-</body>
-</html>
+{% block listaItens %}
+		<div class="tile is-parent">
+			<div class="tile is-child">
+				<form method="POST" enctype="multipart/form-data" action="{{ url_for("editCategoria", categoria=categoria.id) }}">
+					<div class="field">
+						<label class="label">Nome:</label>
+						<div class="control">
+							<input name="nome" required class="input is-medium" type="text" value="{{ categoria.nome }}"><br>
+						</div>
+					</div>
+					<div class="field is-grouped">
+						<div class="control">
+							<button type="submit" class="button is-primary is-medium">Enviar</button>
+						</div>
+						<div class="control">
+							<a href="{{ url_for("showCategoria", categoria=categoria.id) }}">
+								<button type="button" class="button is-text is-medium">Cancelar</button>
+							</a>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div> <!-- <div column is-three-fifths is-offset-one-fifth> -->
+{% endblock %}

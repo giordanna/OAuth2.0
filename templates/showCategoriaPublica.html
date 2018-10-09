@@ -1,38 +1,40 @@
-<!DOCTYPE html>
-<html>
-<head>
-	
-	{% include "headImportacoes.html" %}
-	
-	<title>{{ categoria.nome }} | Catálogo</title>
-</head>
-<body>
+{% extends "layoutPrincipal.html" %}
 
+{% block tituloSite %}
+	{{ categoria.nome }} | Catálogo
+{% endblock %}
+
+{% block inserirCabecalho %}
 	{% include "cabecalhoPublica.html" %}
+{% endblock %}
 
-	<main role="main" class="container">
-	
-		{% include "showMensagens.html" %}
+{% block inserirSidebar %}
+	{% include "sidebar.html" %}
+{% endblock %}
 
-		<h1>{{ categoria.nome }}</h1>
+{% block tituloPagina %}
+	{{ categoria.nome }}
+{% endblock %}
 
-		{% for item in itens %}
+{% block subtituloPagina %}
+	Itens: {{ itens|length }}
+{% endblock %}
 
-		    <p>
-		    	<a href="{{ url_for("showItem", categoria=categoria.id, item=item.id) }}">{{ item.nome }}</a>
-		    </p>
+{% block listaItens %}
+	{% for item in itens %}
 
-		{% endfor %}
+		<div class="tile is-parent">
+			<article class="tile is-child box">
+				<p class="subtitle">
+					<a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">
+						{{ item.nome }}
+					</a>
+				</p>
+				<p>
+					<img width="25%" src="{{ url_for("static", filename="img/" + item.imagem) }}">
+				</p>
+			</article>
+		</div>
 
-		<h3>Lista de Categorias...</h3>
-
-		{% for c in categorias %}
-
-			<a href="{{ url_for("showCategoria", categoria=c.id) }}">{{ c.nome }}</a>
-
-		{% endfor %}
-
-	</main>
-
-</body>
-</html>
+	{% endfor %}
+{% endblock %}

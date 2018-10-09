@@ -1,39 +1,56 @@
-<!DOCTYPE html>
-<html>
-<head>
-	
-	{% include "headImportacoes.html" %}
-	
-	<title>{{ item.nome }}  | Catálogo</title>
-</head>
-<body>
+{% extends "layoutPrincipal.html" %}
 
+{% block tituloSite %}
+	{{ item.nome }} | Catálogo
+{% endblock %}
+
+{% block inserirCabecalho %}
 	{% include "cabecalho.html" %}
+{% endblock %}
 
-	<main role="main" class="container">
-	
-		{% include "showMensagens.html" %}
 
-		<h1>{{ item.nome }}</h1>
-
-		<p>{{ item.descricao }}</p>
-
-		<img width="100%" src="{{ url_for("static", filename="img/" + item.imagem) }}">
-
-		{% if item.usuario_id == usuario_id %}
-			<p>
-				<a href="{{ url_for("editItem", categoria=item.categoria_id, item=item.id) }}">Editar</a> |
-				<a href="{{ url_for("deleteItem", categoria=item.categoria_id, item=item.id) }}">Excluir</a>
-			</p>
-		{% endif %}
-		
+{% block conteudoPrincipal %}
+	<div class="column is-three-fifths is-offset-one-fifth">
 		<p>
-			<a href="{{ url_for("showCategoria", categoria=item.categoria_id) }}">
-				<button type="button">Voltar a categoria...</button>
+			<a href="{{ url_for("showCategoria", categoria=item.categoria_id) }}" class="box is-primary is-medium has-text-centered">
+				Voltar para a categoria
 			</a>
 		</p>
+		<br>
 
-	</main>
+		{% if item.usuario_id == usuario_id %}
 
-</body>
-</html>
+			<div class="field is-grouped">
+				<div class="control">
+					<a href="{{ url_for("editItem", categoria=item.categoria_id, item=item.id) }}">
+						<button type="button" class="button is-medium">Editar</button>
+					</a>
+				</div>
+				<div class="control">
+					<a href="{{ url_for("deleteItem", categoria=item.categoria_id, item=item.id) }}">
+						<button type="button" class="button is-medium">Excluir</button>
+					</a>
+				</div>
+			</div>
+			
+	{% endif %}
+{% endblock %}
+
+
+{% block tituloPagina %}
+	{{ item.nome }}
+{% endblock %}
+
+{% block subtituloPagina %}
+	<strong>Descrição:</strong> {{ item.descricao }}
+{% endblock %}
+
+{% block listaItens %}
+		<div class="tile is-parent">
+			<article class="tile is-child box">
+				<img width="100%" src="{{ url_for("static", filename="img/" + item.imagem) }}">
+			</article>
+		</div>
+	</div> <!-- <div column is-three-fifths is-offset-one-fifth> -->
+
+{% endblock %}

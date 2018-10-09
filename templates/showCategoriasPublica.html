@@ -1,53 +1,40 @@
-<!DOCTYPE html>
-<html>
-<head>
-	
-	{% include "headImportacoes.html" %}
-	
-	<title>Catálogo</title>
-</head>
-<body>
+{% extends "layoutPrincipal.html" %}
 
+{% block tituloSite %}
+	Catálogo
+{% endblock %}
+
+{% block inserirCabecalho %}
 	{% include "cabecalhoPublica.html" %}
+{% endblock %}
 
-	<main role="main" class="container">
+{% block inserirSidebar %}
+	{% include "sidebar.html" %}
+{% endblock %}
 
-		{% include "showMensagens.html" %}
+{% block tituloPagina %}
+	Catálogo
+{% endblock %}
 
-		<h1>Catálogo</h1>
+{% block subtituloPagina %}
+	Itens recentes...
+{% endblock %}
 
-		<div class="container-fluid">
-			<div class="row">
-				<nav class="col-md-2 d-none d-md-block bg-light sidebar">
-					<div class="sidebar-sticky">
-						<ul class="nav flex-column">
-							<li class="nav-item">
-								Categorias:
-							</li>
-								{% for categoria in categorias %}
-									<li class="nav-item">
-										<a class="nav-link" href="{{ url_for("showCategoria", categoria=categoria.id) }}">
-											{{ categoria.nome }}
-										</a>
-									</li>
-								{% endfor %}
-						</ul>
-					</div>
-				</nav>
-			</div>
+{% block listaItens %}
+	{% for item in itens %}
+
+		<div class="tile is-parent">
+			<article class="tile is-child box">
+				<p class="subtitle">
+					<a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">
+						{{ item.nome }}
+					</a>
+				</p>
+				<p>
+					<img width="25%" src="{{ url_for("static", filename="img/" + item.imagem) }}">
+				</p>
+			</article>
 		</div>
 
-		<h2>Itens recentes...</h2>
-
-		{% for item in itens %}
-
-		    <p>
-		    	<a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">{{ item.nome }}</a>
-		    </p>
-
-		{% endfor %}
-
-	</main>
-
-</body>
-</html>
+	{% endfor %}
+{% endblock %}

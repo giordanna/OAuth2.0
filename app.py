@@ -22,7 +22,6 @@ import string
 import hashlib
 import os
 from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
-from flask_wtf.csrf import CSRFProtect
 
 DIRETORIO_UPLOAD = "static/img"
 
@@ -32,7 +31,6 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
 app = Flask(__name__)
-csrf = CSRFProtect(app)
 
 imagemUpload = UploadSet("imagem", IMAGES)
 app.config["UPLOADED_IMAGEM_DEST"] = DIRETORIO_UPLOAD
@@ -59,7 +57,6 @@ def showCategorias():
 
 
 @app.route("/login/", methods=["GET", "POST"])
-@csrf.exempt
 def loginUsuario():
     if request.method == "POST":
         # Validate state token
@@ -432,5 +429,4 @@ def jsonItem(categoria, item):
 if __name__ == "__main__":
     app.secret_key = "super_chave_secreta"
     app.debug = True
-    csrf.init_app(app)
     app.run(host="0.0.0.0", port=5000)

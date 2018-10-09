@@ -1,73 +1,48 @@
-<!DOCTYPE html>
-<html>
-<head>
-	
-	{% include "headImportacoes.html" %}
-	
-	<title>Catálogo</title>
-</head>
-<body>
+{% extends "layoutPrincipal.html" %}
 
+{% block tituloSite %}
+	Catálogo
+{% endblock %}
+
+{% block inserirCabecalho %}
 	{% include "cabecalho.html" %}
+{% endblock %}
 
-	{% include "showMensagens.html" %}
+{% block inserirSidebar %}
+	{% include "sidebar.html" %}
+{% endblock %}
 
-    <main class="container">
-        <div class="columns">
-            <div class="column is-3">
-                <aside class="menu">
-                    <p class="menu-label">
-                        Categorias
-                    </p>
-                    <ul class="menu-list">
-                        {% for categoria in categorias %}
-	                        <li>
-								<a href="{{ url_for("showCategoria", categoria=categoria.id) }}">
-									{{ categoria.nome }}
-								</a>
-							</li>
-						{% endfor %}
-                    </ul>
-                </aside>
-            </div>
-            <div class="column is-9">
+{% block conteudoPrincipal %}
+	<p>
+		<a href="{{ url_for("newCategoria") }}" class="box is-primary is-medium has-text-centered">
+			Adicionar nova categoria
+		</a>
+	</p>
+{% endblock %}
 
-            	<p>
-					<a href="{{ url_for("newCategoria") }}" class="box is-primary is-medium has-text-centered">
-						Adicionar nova categoria
+{% block tituloPagina %}
+	Catálogo
+{% endblock %}
+
+{% block subtituloPagina %}
+	Itens recentes...
+{% endblock %}
+
+{% block listaItens %}
+	{% for item in itens %}
+
+		<div class="tile is-parent">
+			<article class="tile is-child box">
+				<p class="subtitle">
+					<a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">
+						{{ item.nome }}
 					</a>
 				</p>
-				<br>
-               
-                <section class="hero is-info welcome is-small">
-                    <div class="hero-body">
-                        <div class="container">
-                            <h1 class="title">
-                                Catálogo
-                            </h1>
-                            <h2 class="subtitle">
-                                Itens recentes
-                            </h2>
-                        </div>
-                    </div>
-                </section>           
-		
-                <section class="info-tiles">
-                    <div class="tile is-ancestor has-text-centered">
-                    	{% for item in itens %}
-	                        <div class="tile is-parent">
-                        		<article class="tile is-child box">
-                        			<p><img width="25%" src="{{ url_for("static", filename="img/" + item.imagem) }}"></p>
-									<p class="subtitle">
-										<a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">{{ item.nome }}</a>
-									</p>
-							    </article>
-	                        </div>
-                        {% endfor %}
-                    </div>
-                </section>
-            </div>
-        </div>
-	</main>
-</body>
-</html>
+				<p>
+					<img width="25%" src="{{ url_for("static", filename="img/" + item.imagem) }}">
+				</p>
+			</article>
+		</div>
+
+	{% endfor %}
+{% endblock %}

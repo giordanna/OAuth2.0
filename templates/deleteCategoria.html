@@ -1,24 +1,39 @@
-<!DOCTYPE html>
-<html>
-<head>
-	
-    {% include "headImportacoes.html" %}
+{% extends "layoutPrincipal.html" %}
 
-	<title>Excluir categoria | Catálogo</title>
-</head>
-<body>
+{% block tituloSite %}
+	Excluir categoria | Catálogo
+{% endblock %}
 
-	<main role="main" class="container">
+{% block inserirCabecalho %}
+	{% include "cabecalho.html" %}
+{% endblock %}
 
-		<h1>Tem certeza que deseja excluir a categoria {{ categoria.nome }} e todos os seus itens?</h1>
-		<p><a href="{{ url_for("showCategorias") }}">Cancelar</a></p>
-		<form method="POST" enctype="multipart/form-data" action="{{ url_for("deleteCategoria", categoria=categoria.id) }}">
-			{{ form.csrf_token }}
-	        <input type="submit" value="Excluir">
 
-	    </form>
+{% block conteudoPrincipal %}
+	<div class="column is-three-fifths is-offset-one-fifth">
+{% endblock %}
 
-	</main>
 
-</body>
-</html>
+{% block tituloPagina %}
+	Tem certeza que deseja excluir a categoria {{ categoria.nome }} e todos os seus itens?
+{% endblock %}
+
+{% block listaItens %}
+	<div class="tile is-parent">
+		<div class="tile is-child">
+			<form method="POST" enctype="multipart/form-data" action="{{ url_for("deleteCategoria", categoria=categoria.id) }}">
+				<div class="field is-grouped">
+					<div class="control">
+						<button type="submit" class="button is-danger is-medium">Excluir</button>
+					</div>
+					<div class="control">
+						<a href="{{ url_for("showCategoria", categoria=categoria.id) }}">
+							<button type="button" class="button is-text is-medium">Cancelar</button>
+						</a>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div> <!-- <div column is-three-fifths is-offset-one-fifth> -->
+{% endblock %}
