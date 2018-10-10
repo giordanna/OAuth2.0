@@ -42,15 +42,22 @@
 {% endblock %}
 
 {% block subtituloPagina %}
-	<strong>Descrição:</strong> {{ item.descricao }}
+	
 {% endblock %}
 
 {% block listaItens %}
 		<div class="tile is-parent">
 			<article class="tile is-child box">
-				<img width="100%" src="{{ url_for("static", filename="img/" + item.imagem) }}">
+				<p class="subtitle" align="justify"><strong>Descrição:</strong> {{ item.descricao }}</p>
 			</article>
 		</div>
+	</div>
+		<div class="tile is-ancestor has-text-centered">
+			<div class="tile is-parent">
+				<article class="tile is-child box">
+					<img width="100%" src="{{ url_for("static", filename="img/" + item.imagem) }}">
+				</article>
+			</div>
+		</div>
 	</div> <!-- <div column is-three-fifths is-offset-one-fifth> -->
-
 {% endblock %}

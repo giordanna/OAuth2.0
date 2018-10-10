@@ -23,13 +23,13 @@
 			<div class="tile is-child">
 				<form method="POST" enctype="multipart/form-data" action=""{{ url_for("newItem", categoria=categoria.id) }}">
 					<div class="field">
-						<label class="label">Nome:</label>
+						<label class="label">Nome*:</label>
 						<div class="control">
 							<input name="nome" required class="input is-medium" type="text"><br>
 						</div>
 					</div>
 					<div class="field">
-						<label class="label">Descrição:</label>
+						<label class="label">Descrição*:</label>
 						<div class="control">
 							<textarea name="descricao" required class="textarea is-medium"></textarea>
 						</div>

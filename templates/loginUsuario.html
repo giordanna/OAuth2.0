@@ -1,87 +1,109 @@
 <!DOCTYPE html>
 <html>
 <head>
-	
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
-	<link href="{{ url_for("static", filename="css/login.css") }}" rel="stylesheet">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+	<link href="{{ url_for("static", filename="css/styles.css") }}" rel="stylesheet">
+	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+	<link href="{{ url_for("static", filename="css/styles.css") }}" rel="stylesheet">
 
 	<!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
-   <script src="//apis.google.com/js/platform.js?onload=start"></script>
-   <meta name="google-signin-client_id" content="{{ id_cliente }}">
-   <meta name="google-signin-scope" content="profile email">
+	<script src="//apis.google.com/js/platform.js?onload=start"></script>
+	<meta name="google-signin-client_id" content="{{ id_cliente }}">
+	<meta name="google-signin-scope" content="profile email">
 	<!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
 
 	<title>Login | Catálogo</title>
 </head>
 <body>
 
-	<main>
+	<main class="container">
+			<br>
+			<div class="tile is-ancestor">
+				<div class="tile is-vertical">
+					<div class="tile">
+						<div class="tile is-parent is-vertical">
+							<article class="tile is-child notification is-primary">
+								<p class="title">Login</p>
+								<p class="subtitle">Faça login com a sua conta do Google+</p>
+							</article>
+							<article class="tile is-child is-centered">
+								<!-- botão de login do google -->
+								<div id="signinButton">
+									<span class="g-signin2"
+										data-scope="openid email"
+										data-clientid="{{ id_cliente }}"
+										data-redirecturi="postmessage"
+										data-accesstype="offline"
+										data-cookiepolicy="single_host_origin"
+										data-onsuccess="signInSuccess"
+										data-onfailure="signInFailure"
+										data-theme="light"
+										data-width="300"
+										data-height="75"
+										data-longtitle="true">
+									</span>
+								</div>
 
-		<!-- GOOGLE PLUS SIGN IN BUTTON-->
-	    <div id="signinButton">
-			<span class="g-signin2"
-				data-scope="openid email"
-				data-clientid="{{ id_cliente }}"
-				data-redirecturi="postmessage"
-				data-accesstype="offline"
-				data-cookiepolicy="single_host_origin"
-				data-onsuccess="signInSuccess"
-				data-onfailure="signInFailure"
-				data-theme="light"
-				data-width="300"
-				data-height="75"
-				data-longtitle="true">
-			</span>
-	    </div>
-	    <br>
+								<div id="resultado"></div>
+							</article>
+							<article class="tile is-child" id="botaoVoltar">
+								<div class="control">
+									<a href="/">
+										<button type="button" class="button is-text">Voltar</button>
+									</a>
+								</div>
+							</article>
+						</div>
+					</div>
+				</div>
+			</div>
+	
+					
 
-		<div id="result"></div>
+		</div>
+	</main>
 
 		<script>
-		function signInSuccess(authResult) {
+			function signInSuccess(authResult) {
 
-			// Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
+				$.ajax({
+					type: "POST",
+					url: "{{ url_for("loginUsuario") }}?state={{state}}",
+					processData: false,
+					data: authResult["code"],
+					contentType: "application/octet-stream; charset=utf-8",
+					success: function(result) {
+						// Handle or verify the server response if necessary.
+						if (result) {
+							// Hide the sign-in button now that the user is authorized
+							$("#signinButton").attr("style", "display: none");
+							$("#botaoVoltar").attr("style", "display: none");
+							$("#resultado").html("Login realizado com sucesso!</br>"+ result + "</br>Redirecionando...");
+							setTimeout(function() {
+								window.location.href = "/categorias/";
+							}, 4000);
+						}
+				    }
+				});
 
-			$.ajax({
-				type: 'POST',
-				url: '{{ url_for("loginUsuario") }}?state={{state}}',
-				processData: false,
-				data: authResult['code'],
-				contentType: 'application/octet-stream; charset=utf-8',
-				success: function(result) {
-					// Handle or verify the server response if necessary.
-					if (result) {
-						// Hide the sign-in button now that the user is authorized
-						$('#signinButton').attr('style', 'display: none');
-						$('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...');
-						setTimeout(function() {
-							window.location.href = "/categorias/";
-						}, 4000);
-					}
-			    }
-			});
+			}
 
-		}
+			function signInFailure(authResult) {
 
-		function signInFailure(authResult) {
+				if (authResult["error"]) {
+					console.log("There was an error: " + authResult["error"]);
+		  		} else {
+					$("#resultado").html("Failed to make a server-side call. Check your configuration and console.");
+				}
 
-			if (authResult['error']) {
-				console.log('There was an error: ' + authResult['error']);
-	  		} else {
-		        $('#result').html('Failed to make a server-side call. Check your configuration and console.');
-		    }
-
-		}
+			}
 		</script>
-
-		<!--END GOOGLE PLUS SIGN IN BUTTON -->
-
 	</main>
 
 </body>

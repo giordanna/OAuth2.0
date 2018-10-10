@@ -1,24 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-	
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-	<link href="{{ url_for("static", filename="css/login.css") }}" rel="stylesheet">
 
-	<!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
-   <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
-   <meta name="google-signin-client_id" content="{{ id_cliente }}">
-	<!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+	<link href="{{ url_for("static", filename="css/styles.css") }}" rel="stylesheet">
+	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+	<link href="{{ url_for("static", filename="css/styles.css") }}" rel="stylesheet">
+
+	<script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+	<meta name="google-signin-client_id" content="{{ id_cliente }}">
 
 	<title>Logout | Catálogo</title>
 </head>
 <body>
 
-	<main align="center">
-
-		<h2>Desconectando...</h2>
+	<main class="container">
+		<br>
+		<div class="tile is-ancestor">
+			<div class="tile is-vertical">
+				<div class="tile">
+					<div class="tile is-parent is-vertical">
+						<article class="tile is-child notification is-info">
+							<p class="title">Desconectando</p>
+							<p class="subtitle">Aguarde...</p>
+						</article>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
 
 		<script>
 
@@ -28,7 +43,7 @@
 
 					setTimeout (function () {
 				       signOut();
-				    }, 3000);
+				    }, 4000);
 				});
 			}
 
@@ -40,9 +55,6 @@
 			};
 
 		</script>
-
-		<!--END GOOGLE PLUS SIGN IN BUTTON -->
-
 	</main>
 
 </body>

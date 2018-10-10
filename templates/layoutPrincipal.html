@@ -25,35 +25,33 @@
 			{% block inserirSidebar %}
 			{% endblock %}
 
-			<div class="column">
 
-				{% block conteudoPrincipal %}
-				{% endblock %}
+			{% block conteudoPrincipal %}
+			{% endblock %}
 
-				<br>
+			<br>
 
-				<section class="hero is-info welcome is-small">
-					<div class="hero-body">
-						<div class="container">
-							<h1 class="title">
-								{% block tituloPagina %}
-								{% endblock %}
-							</h1>
-							<h2 class="subtitle" align="justify">
-								{% block subtituloPagina %}
-								{% endblock %}
-							</h2>
-						</div>
+			<section class="hero is-info welcome is-small">
+				<div class="hero-body">
+					<div class="container">
+						<h1 class="title">
+							{% block tituloPagina %}
+							{% endblock %}
+						</h1>
+						<h2 class="subtitle" align="justify">
+							{% block subtituloPagina %}
+							{% endblock %}
+						</h2>
 					</div>
-				</section>           
+				</div>
+			</section>           
 
-				<section class="info-tiles">
-					<div class="tile is-ancestor has-text-centered">
-						{% block listaItens %}
-						{% endblock %}
-					</div>
-				</section>
-			</div>
+			<section class="info-tiles">
+				<div class="tile is-ancestor has-text-centered">
+					{% block listaItens %}
+					{% endblock %}
+				</div>
+			</section>
 		</div>
 	</main>
 </body>

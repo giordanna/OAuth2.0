@@ -8,7 +8,6 @@ from flask import (
 )
 
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
 from flask.ext.httpauth import HTTPBasicAuth
 import json
 from oauth2client.client import flow_from_clientsecrets
@@ -28,7 +27,7 @@ DIRETORIO_UPLOAD = "static/img"
 auth = HTTPBasicAuth()
 
 Base.metadata.bind = engine
-DBSession = sessionmaker(bind = engine)
+DBSession = sessionmaker(bind=engine)
 session = DBSession()
 app = Flask(__name__)
 
@@ -40,28 +39,34 @@ configure_uploads(app, imagemUpload)
 ID_CLIENTE = json.loads(
     open("segredos_cliente.json", "r").read())["web"]["client_id"]
 
+
 def arquivoPermitido(arquivo):
     return '.' in arquivo and \
            arquivo.rsplit('.', 1)[1].lower() in EXTENSOES_PERMITIDAS
+
 
 @app.route("/")
 @app.route("/categorias/")
 def showCategorias():
     todasCategorias = session.query(Categoria).all()
-    itensRecentes = session.query(Item).order_by(Item.id.desc()).limit(8)
+    itensRecentes = session.query(Item).order_by(Item.id.desc()).limit(8).all()
 
     pagina = "showCategorias.html"
     if "usuario_id" not in login_session:
         pagina = "showCategoriasPublica.html"
-    return render_template(pagina, categorias=todasCategorias, itens=itensRecentes)
+    return render_template(
+        pagina, categorias=todasCategorias, itens=itensRecentes)
 
 
 @app.route("/login/", methods=["GET", "POST"])
 def loginUsuario():
+    # trecho de validação de login de usuário retirado de:
+    # https://github.com/udacity/ud330/blob/master/Lesson2/step5/project.py
     if request.method == "POST":
         # Validate state token
         if request.args.get("state") != login_session["state"]:
-            response = make_response(json.dumps("Invalid state parameter."), 401)
+            response = make_response(json.dumps(
+                "Invalid state parameter."), 401)
             response.headers["Content-Type"] = "application/json"
             return response
         # Obtain authorization code
@@ -69,7 +74,8 @@ def loginUsuario():
 
         try:
             # Upgrade the authorization code into a credentials object
-            oauth_flow = flow_from_clientsecrets("segredos_cliente.json", scope="")
+            oauth_flow = flow_from_clientsecrets(
+                "segredos_cliente.json", scope="")
             oauth_flow.redirect_uri = "postmessage"
             credentials = oauth_flow.step2_exchange(code)
         except FlowExchangeError:
@@ -94,7 +100,8 @@ def loginUsuario():
         gplus_id = credentials.id_token["sub"]
         if result["user_id"] != gplus_id:
             response = make_response(
-                json.dumps("Token's user ID doesn't match given user ID."), 401)
+                json.dumps(
+                    "Token's user ID doesn't match given user ID."), 401)
             response.headers["Content-Type"] = "application/json"
             return response
 
@@ -109,8 +116,9 @@ def loginUsuario():
         stored_access_token = login_session.get("access_token")
         stored_gplus_id = login_session.get("gplus_id")
         if stored_access_token is not None and gplus_id == stored_gplus_id:
-            response = make_response(json.dumps("Current user is already connected."),
-                                     200)
+            response = make_response(
+                            json.dumps("Current user is already connected."),
+                            200)
             response.headers["Content-Type"] = "application/json"
             return response
 
@@ -129,28 +137,30 @@ def loginUsuario():
         login_session["imagem"] = data["picture"]
         login_session["email"] = data["email"]
 
-        output = "<div align='center'>"
+        output = ""
 
         if not getUsuarioId(login_session["email"]):
             login_session["usuario_id"] = newUsuario(login_session)
             output += "<h1>Bem vindo(a), "
         else:
             login_session["usuario_id"] = getUsuarioId(login_session["email"])
-            output += "<h1>Bem vindo(a) de volta, "
- 
+            output += "<h1>Bem vindo(a) de volta, <strong>"
+
         output += login_session["nome"]
-        output += "!</h1>"
+        output += "</strong>!</h1>"
         output += "<img src='"
         output += login_session["imagem"]
-        output += "' style = 'width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;'></div>"
+        output += '''' style = 'width: 300px; height: 300px;
+        border-radius: 150px;-webkit-border-radius: 150px;
+        -moz-border-radius: 150px;'>'''
         flash(u"Você está logado como %s" % login_session["nome"])
-        print "done!"
         return output
     else:
-        state = "".join(random.choice(string.ascii_uppercase + string.digits)
-                    for x in xrange(32))
+        state = "".join(random.choice(
+                string.ascii_uppercase + string.digits) for x in xrange(32))
         login_session["state"] = state
-        return render_template("loginUsuario.html", id_cliente=ID_CLIENTE, state=state)
+        return render_template(
+            "loginUsuario.html", id_cliente=ID_CLIENTE, state=state)
 
 
 @app.route("/logout/")
@@ -161,7 +171,9 @@ def logoutUsuario():
         flash(u"Usuário não conectado.")
         return redirect(url_for("showCategorias"))
 
-    url = "https://accounts.google.com/o/oauth2/revoke?token=%s" % login_session["access_token"]
+    url = ("https://accounts.google.com/o/oauth2/revoke?token=%s"
+           % login_session["access_token"])
+
     h = httplib2.Http()
     result = h.request(url, "GET")[0]
     if result["status"] == "200":
@@ -178,13 +190,15 @@ def logoutUsuario():
 
     return render_template("logoutUsuario.html", id_cliente=ID_CLIENTE)
 
+
 def newUsuario(login_session):
-    newUsuario = Usuario(nome=login_session["nome"],
-                        email=login_session["email"],
-                        imagem=login_session["imagem"])
+    newUsuario = Usuario(
+        nome=login_session["nome"], email=login_session["email"],
+        imagem=login_session["imagem"])
     session.add(newUsuario)
     session.commit()
-    usuario = session.query(Usuario).filter_by(email=login_session["email"]).one()
+    usuario = session.query(Usuario).filter_by(
+                                        email=login_session["email"]).one()
     return usuario.id
 
 
@@ -199,6 +213,7 @@ def getUsuarioId(email):
         return usuario.id
     except:
         return None
+
 
 @app.route("/categorias/new/", methods=["GET", "POST"])
 def newCategoria():
@@ -224,8 +239,13 @@ def showCategoria(categoria):
     seusItens = session.query(Item).filter_by(categoria_id=categoria).all()
 
     if "usuario_id" not in login_session:
-        return render_template("showCategoriaPublica.html", categorias=todasCategorias, categoria=umaCategoria, itens=seusItens)
-    return render_template("showCategoria.html", categorias=todasCategorias, categoria=umaCategoria, itens=seusItens, usuario_id=login_session["usuario_id"])
+        return render_template(
+            "showCategoriaPublica.html", categorias=todasCategorias,
+            categoria=umaCategoria, itens=seusItens)
+    return render_template(
+        "showCategoria.html",
+        categorias=todasCategorias, categoria=umaCategoria, itens=seusItens,
+        usuario_id=login_session["usuario_id"])
 
 
 @app.route("/categorias/<int:categoria>/edit/", methods=["GET", "POST"])
@@ -245,7 +265,7 @@ def editCategoria(categoria):
         session.commit()
         flash("A categoria foi editada!")
         return redirect(url_for("showCategoria", categoria=umaCategoria.id))
-    else: 
+    else:
         return render_template("editCategoria.html", categoria=umaCategoria)
 
 
@@ -265,7 +285,9 @@ def deleteCategoria(categoria):
         for i in itens:
             if i.imagem != "item_sem_imagem.png":
                 try:
-                    os.remove(os.path.join(app.config["UPLOADED_IMAGEM_DEST"], i.imagem))
+                    os.remove(
+                        os.path.join(
+                            app.config["UPLOADED_IMAGEM_DEST"], i.imagem))
                 except OSError:
                     pass
 
@@ -274,18 +296,23 @@ def deleteCategoria(categoria):
         session.commit()
         flash(u"A categoria foi excluída! Seus itens também foram excluídos!")
         return redirect(url_for("showCategorias"))
-    else: 
+    else:
         return render_template("deleteCategoria.html", categoria=umaCategoria)
+
 
 @app.route("/categorias/<int:categoria>/<int:item>/")
 def showItem(categoria, item):
-    umItem = session.query(Item).filter_by(id=item, categoria_id=categoria).one()
+    umItem = session.query(Item).filter_by(
+        id=item, categoria_id=categoria).one()
     if umItem is None:
         return showCategoria(categoria=categoria)
     else:
         if "usuario_id" not in login_session:
             return render_template("showItemPublica.html", item=umItem)
-        return render_template("showItem.html", item=umItem, usuario_id=login_session["usuario_id"])
+        return render_template(
+            "showItem.html", item=umItem,
+            usuario_id=login_session["usuario_id"])
+
 
 @app.route("/categorias/<int:categoria>/new/", methods=["GET", "POST"])
 def newItem(categoria):
@@ -301,21 +328,23 @@ def newItem(categoria):
     if request.method == "POST":
         umUsuario = getUsuario(login_session["usuario_id"])
 
-        newItem = Item(nome=request.form["nome"],
-                        descricao=request.form["descricao"],
-                        imagem="item_sem_imagem.png",
-                        categoria=umaCategoria,
-                        usuario=umUsuario)
+        newItem = Item(
+            nome=request.form["nome"], descricao=request.form["descricao"],
+            imagem="item_sem_imagem.png", categoria=umaCategoria,
+            usuario=umUsuario)
         session.add(newItem)
         session.flush()
         item_id = newItem.id
         session.commit()
 
         # se o usuário enviar uma imagem
-        if "imagem" in request.files and request.files["imagem"].filename != "" and request.files["imagem"]:
+        if "imagem" in request.files and \
+                request.files["imagem"].filename != "" and \
+                request.files["imagem"]:
             arquivo = request.files["imagem"]
             tipo_imagem = arquivo.filename.rsplit(".", 1)[1].lower()
-            imagem_nome = hashlib.sha1(str(item_id)).hexdigest() + "." + tipo_imagem
+            imagem_nome = hashlib.sha1(
+                str(item_id)).hexdigest() + "." + tipo_imagem
             imagemUpload.save(arquivo, name=imagem_nome)
             newItem.imagem = imagem_nome
             session.add(newItem)
@@ -323,15 +352,17 @@ def newItem(categoria):
 
         flash("Novo item criado!")
         return redirect(url_for("showCategoria", categoria=categoria))
-    else: 
+    else:
         return render_template("newItem.html", categoria=umaCategoria)
 
 
-@app.route("/categorias/<int:categoria>/<int:item>/edit/", methods=["GET", "POST"])
+@app.route(
+    "/categorias/<int:categoria>/<int:item>/edit/", methods=["GET", "POST"])
 def editItem(categoria, item):
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
-    umItem = session.query(Item).filter_by(id=item, categoria_id=categoria).one()
+    umItem = session.query(Item).filter_by(
+        id=item, categoria_id=categoria).one()
     if umItem is None:
         return showCategoria(categoria=categoria)
     if login_session["usuario_id"] != umItem.usuario_id:
@@ -341,16 +372,20 @@ def editItem(categoria, item):
     if request.method == "POST":
 
         # se o usuário enviar uma imagem
-        if "imagem" in request.files:
+        if "imagem" in request.files and \
+                request.files["imagem"].filename != "" and \
+                request.files["imagem"]:
             arquivo = request.files["imagem"]
             if umItem.imagem != "item_sem_imagem.png":
                 try:
-                    os.remove(os.path.join(app.config["UPLOADED_IMAGEM_DEST"], umItem.imagem))
+                    os.remove(os.path.join(
+                        app.config["UPLOADED_IMAGEM_DEST"], umItem.imagem))
                 except OSError:
                     pass
             else:
                 tipo_imagem = arquivo.filename.rsplit(".", 1)[1].lower()
-                imagem_nome = hashlib.sha1(str(umItem.id)).hexdigest() + "." + tipo_imagem
+                imagem_nome = hashlib.sha1(
+                    str(umItem.id)).hexdigest() + "." + tipo_imagem
                 umItem.imagem = imagem_nome
 
             imagemUpload.save(arquivo, name=umItem.imagem)
@@ -361,15 +396,17 @@ def editItem(categoria, item):
         session.commit()
         flash("O item foi editado!")
         return redirect(url_for("showCategoria", categoria=categoria))
-    else: 
+    else:
         return render_template("editItem.html", item=umItem)
 
 
-@app.route("/categorias/<int:categoria>/<int:item>/delete/", methods=["GET", "POST"])
+@app.route(
+    "/categorias/<int:categoria>/<int:item>/delete/", methods=["GET", "POST"])
 def deleteItem(categoria, item):
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
-    umItem = session.query(Item).filter_by(id=item, categoria_id=categoria).one()
+    umItem = session.query(Item).filter_by(
+        id=item, categoria_id=categoria).one()
     if umItem is None:
         return showCategoria(categoria=categoria)
     if login_session["usuario_id"] != umItem.usuario_id:
@@ -379,14 +416,15 @@ def deleteItem(categoria, item):
     if request.method == "POST":
         if umItem.imagem != "item_sem_imagem.png":
             try:
-                os.remove(os.path.join(app.config["UPLOADED_IMAGEM_DEST"], umItem.imagem))
+                os.remove(os.path.join(
+                    app.config["UPLOADED_IMAGEM_DEST"], umItem.imagem))
             except OSError:
                 pass
         session.delete(umItem)
         session.commit()
         flash(u"O item foi excluído!")
         return redirect(url_for("showCategoria", categoria=categoria))
-    else: 
+    else:
         return render_template("deleteItem.html", item=umItem)
 
 
@@ -402,8 +440,8 @@ def jsonCategorias():
         categoriaSerializada = c.serialize
         categoriaSerializada["itens"] = itensSerializados
         categoriasSerializadas.append(categoriaSerializada)
-    
-    return jsonify(categorias = categoriasSerializadas)
+
+    return jsonify(categorias=categoriasSerializadas)
 
 
 @app.route("/api/v1/categorias/<int:categoria>")
@@ -416,14 +454,14 @@ def jsonCategoria(categoria):
     categoriaSerializada = categoria.serialize
     categoriaSerializada["itens"] = itensSerializados
 
-    return jsonify(categoria = categoriaSerializada)
+    return jsonify(categoria=categoriaSerializada)
 
 
 @app.route("/api/v1/categorias/<int:categoria>/<int:item>")
 def jsonItem(categoria, item):
     item = session.query(Item).filter_by(id=item, categoria_id=categoria).one()
-    
-    return jsonify(item = item.serialize)
+
+    return jsonify(item=item.serialize)
 
 
 if __name__ == "__main__":

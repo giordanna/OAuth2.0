@@ -13,11 +13,12 @@
 {% endblock %}
 
 {% block conteudoPrincipal %}
-	<p>
-		<a href="{{ url_for("newCategoria") }}" class="box is-primary is-medium has-text-centered">
-			Adicionar nova categoria
-		</a>
-	</p>
+	<div class="column is-9">
+		<p>
+			<a href="{{ url_for("newCategoria") }}" class="box is-primary is-medium has-text-centered">
+				Adicionar nova categoria
+			</a>
+		</p>
 {% endblock %}
 
 {% block tituloPagina %}
@@ -29,20 +30,26 @@
 {% endblock %}
 
 {% block listaItens %}
-	{% for item in itens %}
+	{% for i in range(itens|length) %}
 
-		<div class="tile is-parent">
+		<div class="tile is-parent is-one-third">
 			<article class="tile is-child box">
-				<p class="subtitle">
-					<a href="{{ url_for("showItem", categoria=item.categoria_id, item=item.id) }}">
-						{{ item.nome }}
-					</a>
-				</p>
-				<p>
-					<img width="25%" src="{{ url_for("static", filename="img/" + item.imagem) }}">
-				</p>
+				<a href="{{ url_for("showItem", categoria=itens[i].categoria_id, item=itens[i].id) }}">
+					<p class="title">
+						{{ itens[i].nome }}
+					</p>
+					<p class="subtitle">
+						<img width="100%" src="{{ url_for("static", filename="img/" + itens[i].imagem) }}">
+					</p>
+				</a>
 			</article>
 		</div>
 
+		{% if (i + 1) % 3 == 0 %}
+			</div>
+			<div class="tile is-ancestor has-text-centered">
+		{% endif %}
+
 	{% endfor %}
+	</div> <!-- <div column is-9 -->
 {% endblock %}
