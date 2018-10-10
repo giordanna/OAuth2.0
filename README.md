@@ -10,7 +10,7 @@ Na hora de criar o ID, dentro de Restrições:
 - Insira na seção de URIs de redirecionamento autorizados os endereços http://localhost:5000 e http://localhost:5000/login.
 
 ### Como instalar e executar a máquina virtual
-- Baixe ou clone este repositório usando `git clone https://github.com/giordanna/OAuth2.0.git`;
+- Baixe ou clone este repositório usando `git clone https://github.com/giordanna/projeto-catalogo.git`;
 - Dentro do diretório, instale a máquina virtual do vagrant com `vagrant up`;
 - Em seguida, execute com `vagrant ssh`.
 
