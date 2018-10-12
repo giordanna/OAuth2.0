@@ -7,6 +7,7 @@ pip install --upgrade pip
 pip install werkzeug==0.8.3
 pip install flask==0.9
 pip install Flask-Login==0.1.3
+pip install Flask-Uploads==0.2.1
 pip install oauth2client
 pip install requests
 pip install httplib2
