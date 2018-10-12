@@ -1,43 +1,41 @@
-<!-- template: https://dansup.github.io/bulma-templates/templates/admin.html -->
+<!-- template retirado de: https://dansup.github.io/bulma-templates/templates/admin.html -->
 <header>
-	<!-- START NAV -->
 	<nav class="navbar is-white">
-            <div class="navbar-brand">
-                <a class="navbar-item brand-text" href="/">
-		         	Catálogo
-		        </a>
+		<div class="navbar-brand">
+			<a class="navbar-item brand-text" href="/">
+				Catálogo
+			</a>
 
-		       <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu">
-			      <span aria-hidden="true"></span>
-			      <span aria-hidden="true"></span>
-			      <span aria-hidden="true"></span>
-			    </a>
-		  	</div>
+			<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu">
+				<span aria-hidden="true"></span>
+				<span aria-hidden="true"></span>
+				<span aria-hidden="true"></span>
+			</a>
+		</div>
 
-	        <div id="navMenu" class="navbar-menu">
-                <div class="navbar-end">
-                    <div class="navbar-item">
-            			<a class="button is-primary is-outlined" href="{{ url_for("logoutUsuario") }}">
-            				<span>
-            					Logout
-            				</span>
-            			</a>
-	            	</div>
-                </div>
-            </div>
-    </nav>
+		<div id="navMenu" class="navbar-menu">
+			<div class="navbar-end">
+				<div class="navbar-item">
+					<a class="button is-primary is-outlined" href="{{ url_for("logoutUsuario") }}">
+						<span>
+							Logout
+						</span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
 </header>
 
 <script>
 	$(document).ready(function() {
 
-	  // Check for click events on the navbar burger icon
-	  $(".navbar-burger").click(function() {
+		// verifica eventos de clique pro botão hamburger
+		$(".navbar-burger").click(function() {
 
-	      // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-	      $(".navbar-burger").toggleClass("is-active");
-	      $(".navbar-menu").toggleClass("is-active");
+			$(".navbar-burger").toggleClass("is-active");
+			$(".navbar-menu").toggleClass("is-active");
 
-	  });
+		});
 	});
 </script>

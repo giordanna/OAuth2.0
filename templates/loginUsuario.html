@@ -12,11 +12,9 @@
 
 	<link href="{{ url_for("static", filename="css/styles.css") }}" rel="stylesheet">
 
-	<!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
 	<script src="//apis.google.com/js/platform.js?onload=start"></script>
 	<meta name="google-signin-client_id" content="{{ id_cliente }}">
 	<meta name="google-signin-scope" content="profile email">
-	<!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
 
 	<title>Login | Catálogo</title>
 </head>
@@ -79,9 +77,9 @@
 					data: authResult["code"],
 					contentType: "application/octet-stream; charset=utf-8",
 					success: function(result) {
-						// Handle or verify the server response if necessary.
+						// verifica se a resposta ao servidor é necessária
 						if (result) {
-							// Hide the sign-in button now that the user is authorized
+							// esconde o botão do google agora que o usuário está conectado
 							$("#signinButton").attr("style", "display: none");
 							$("#botaoVoltar").attr("style", "display: none");
 							$("#resultado").html("Login realizado com sucesso!</br>"+ result + "</br>Redirecionando...");
@@ -97,9 +95,9 @@
 			function signInFailure(authResult) {
 
 				if (authResult["error"]) {
-					console.log("There was an error: " + authResult["error"]);
+					console.log("Houve um erro: " + authResult["error"]);
 		  		} else {
-					$("#resultado").html("Failed to make a server-side call. Check your configuration and console.");
+					$("#resultado").html("Falha ao fazer chamada pelo servidor. Verifique o seu console.");
 				}
 
 			}

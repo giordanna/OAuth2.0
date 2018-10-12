@@ -63,53 +63,54 @@ def loginUsuario():
     # trecho de validação de login de usuário retirado de:
     # https://github.com/udacity/ud330/blob/master/Lesson2/step5/project.py
     if request.method == "POST":
-        # Validate state token
+        # valida state token
         if request.args.get("state") != login_session["state"]:
             response = make_response(json.dumps(
-                "Invalid state parameter."), 401)
+                u"Parâmetro de state inválido."), 401)
             response.headers["Content-Type"] = "application/json"
             return response
         # Obtain authorization code
         code = request.data
 
         try:
-            # Upgrade the authorization code into a credentials object
+            # atualiza o código de autorização em um objeto de credenciais
             oauth_flow = flow_from_clientsecrets(
                 "segredos_cliente.json", scope="")
             oauth_flow.redirect_uri = "postmessage"
             credentials = oauth_flow.step2_exchange(code)
         except FlowExchangeError:
             response = make_response(
-                json.dumps("Failed to upgrade the authorization code."), 401)
+                json.dumps(
+                    u"Falha ao tentar atualizar código de autenticação"), 401)
             response.headers["Content-Type"] = "application/json"
             return response
 
-        # Check that the access token is valid.
+        # verifica se o token de acesso é valido
         access_token = credentials.access_token
         url = ("https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s"
                % access_token)
         h = httplib2.Http()
         result = json.loads(h.request(url, "GET")[1])
-        # If there was an error in the access token info, abort.
+        # se houver algum problema, retornar erro
         if result.get("error") is not None:
             response = make_response(json.dumps(result.get("error")), 500)
             response.headers["Content-Type"] = "application/json"
             return response
 
-        # Verify that the access token is used for the intended user.
+        # verifica se o token é do usuário correto
         gplus_id = credentials.id_token["sub"]
         if result["user_id"] != gplus_id:
             response = make_response(
                 json.dumps(
-                    "Token's user ID doesn't match given user ID."), 401)
+                    u"ID de usuário do token não bate com o ID dado."), 401)
             response.headers["Content-Type"] = "application/json"
             return response
 
-        # Verify that the access token is valid for this app.
+        # verifica se o token é válido para o site
         if result["issued_to"] != ID_CLIENTE:
             response = make_response(
-                json.dumps("Token's client ID does not match app's."), 401)
-            print "Token's client ID does not match app's."
+                json.dumps(
+                    u"ID de usuário do token não bate com o ID no site."), 401)
             response.headers["Content-Type"] = "application/json"
             return response
 
@@ -117,16 +118,16 @@ def loginUsuario():
         stored_gplus_id = login_session.get("gplus_id")
         if stored_access_token is not None and gplus_id == stored_gplus_id:
             response = make_response(
-                            json.dumps("Current user is already connected."),
+                            json.dumps(u"Usuário já está conectado."),
                             200)
             response.headers["Content-Type"] = "application/json"
             return response
 
-        # Store the access token in the session for later use.
+        # guarda o token de acesso para uso futuro
         login_session["access_token"] = credentials.access_token
         login_session["gplus_id"] = gplus_id
 
-        # Get user info
+        # obtêm informações do usuário
         userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
         params = {"access_token": credentials.access_token, "alt": "json"}
         answer = requests.get(userinfo_url, params=params)
@@ -139,6 +140,9 @@ def loginUsuario():
 
         output = ""
 
+        # verifica se usuário já existe no banco de dados. se sim
+        # só adiciona na sessão o seu id, senão, adicione ao
+        # banco de dados e adiciona na sessão seu id
         if not getUsuarioId(login_session["email"]):
             login_session["usuario_id"] = newUsuario(login_session)
             output += "<h1>Bem vindo(a), "
@@ -171,6 +175,7 @@ def logoutUsuario():
         flash(u"Usuário não conectado.")
         return redirect(url_for("showCategorias"))
 
+    # desloga o usuário tanto no aplicativo tanto na api do google
     url = ("https://accounts.google.com/o/oauth2/revoke?token=%s"
            % login_session["access_token"])
 
@@ -234,10 +239,13 @@ def newCategoria():
 def showCategoria(categoria):
     todasCategorias = session.query(Categoria).all()
     umaCategoria = session.query(Categoria).filter_by(id=categoria).one()
+    # verifica se a categoria existe no banco, senão, retorna
+    # para a página de categorias
     if umaCategoria is None:
         return showCategorias()
     seusItens = session.query(Item).filter_by(categoria_id=categoria).all()
-
+    # verifica se há algun usuário logado. se sim, renderiza a página
+    # de usuário, senão, renderiza a página pública
     if "usuario_id" not in login_session:
         return render_template(
             "showCategoriaPublica.html", categorias=todasCategorias,
@@ -250,6 +258,8 @@ def showCategoria(categoria):
 
 @app.route("/categorias/<int:categoria>/edit/", methods=["GET", "POST"])
 def editCategoria(categoria):
+    # verifica se há algum usuário logado, e depois se tal usuário
+    # é dono desta categoria
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
     umaCategoria = session.query(Categoria).filter_by(id=categoria).one()
@@ -271,6 +281,8 @@ def editCategoria(categoria):
 
 @app.route("/categorias/<int:categoria>/delete/", methods=["GET", "POST"])
 def deleteCategoria(categoria):
+    # verifica se há algum usuário logado, e depois se tal usuário
+    # é dono desta categoria
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
     umaCategoria = session.query(Categoria).filter_by(id=categoria).one()
@@ -282,6 +294,8 @@ def deleteCategoria(categoria):
 
     if request.method == "POST":
         itens = session.query(Item).filter_by(categoria_id=categoria).all()
+        # verifica se cada item a se deletado possui uma imagem
+        # customizada. se sim, ela deve ser excluída do servidor
         for i in itens:
             if i.imagem != "item_sem_imagem.png":
                 try:
@@ -316,6 +330,8 @@ def showItem(categoria, item):
 
 @app.route("/categorias/<int:categoria>/new/", methods=["GET", "POST"])
 def newItem(categoria):
+    # verifica se há algum usuário logado, e depois se tal usuário
+    # é dono desta categoria
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
     umaCategoria = session.query(Categoria).filter_by(id=categoria).one()
@@ -337,7 +353,8 @@ def newItem(categoria):
         item_id = newItem.id
         session.commit()
 
-        # se o usuário enviar uma imagem
+        # se o usuário enviar uma imagem, envia para o servidor
+        # com o nome equivalente ao seu id em hash
         if "imagem" in request.files and \
                 request.files["imagem"].filename != "" and \
                 request.files["imagem"]:
@@ -359,6 +376,8 @@ def newItem(categoria):
 @app.route(
     "/categorias/<int:categoria>/<int:item>/edit/", methods=["GET", "POST"])
 def editItem(categoria, item):
+    # verifica se há algum usuário logado, e depois se tal usuário
+    # é dono deste item
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
     umItem = session.query(Item).filter_by(
@@ -371,7 +390,9 @@ def editItem(categoria, item):
 
     if request.method == "POST":
 
-        # se o usuário enviar uma imagem
+        # se o usuário enviar uma imagem, verifica se existe alguma imagem
+        # antes, se sim, apaga a imagem anterior, envia a nova para o
+        # servidor com o nome equivalente ao seu id em hash
         if "imagem" in request.files and \
                 request.files["imagem"].filename != "" and \
                 request.files["imagem"]:
@@ -403,6 +424,8 @@ def editItem(categoria, item):
 @app.route(
     "/categorias/<int:categoria>/<int:item>/delete/", methods=["GET", "POST"])
 def deleteItem(categoria, item):
+    # verifica se há algum usuário logado, e depois se tal usuário
+    # é dono deste item
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
     umItem = session.query(Item).filter_by(
@@ -432,6 +455,9 @@ def deleteItem(categoria, item):
 def jsonCategorias():
     categorias = session.query(Categoria).all()
     categoriasSerializadas = []
+    # serializa cada item das categorias, e depois cria uma lista
+    # de itens serializados para juntar com a categoria serializada
+    # correspondente
     for c in categorias:
         itens = session.query(Item).filter_by(categoria_id=c.id).all()
         itensSerializados = []
@@ -448,6 +474,8 @@ def jsonCategorias():
 def jsonCategoria(categoria):
     categoria = session.query(Categoria).filter_by(id=categoria).one()
     itens = session.query(Item).filter_by(categoria_id=categoria.id).all()
+    # serializa cada item das categoria, e depois cria uma lista
+    # de itens serializados para juntar com a categoria serializada
     itensSerializados = []
     for i in itens:
         itensSerializados.append(i.serialize)
