@@ -17,6 +17,7 @@ Na hora de criar o ID, dentro de Restrições:
 ### Como executar o webserver
 - Entre na pasta compartilhada da máquina virtual em seu terminal usando `cd /vagrant`;
 - Execute `python configuracao_db.py` para gerar o banco de dados do sqlite;
+- Caso deseje, popule o webserver executando `python popular_db.py` para gerar vários itens e categorias mockup. Você pode modificar o email do usuário neste arquivo para o seu equivalente, podendo assim editar excluir itens e categorias;
 - Execute `python app.py`. Depois, você poderá acessar localmente o site em http://localhost:5000
 
 ### Dúvidas

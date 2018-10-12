@@ -8,7 +8,6 @@ from flask import (
 )
 
 from sqlalchemy.orm import sessionmaker
-from flask.ext.httpauth import HTTPBasicAuth
 import json
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -22,9 +21,8 @@ import hashlib
 import os
 from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
 
-DIRETORIO_UPLOAD = "static/img"
 
-auth = HTTPBasicAuth()
+DIRETORIO_UPLOAD = "static/img"
 
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
