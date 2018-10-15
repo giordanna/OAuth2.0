@@ -21,21 +21,11 @@ import hashlib
 import os
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 
-"""
-  @app.route('/')
-  def dostuff():
-    with sql.connect("database.db") as con:
-      name = "bob"
-      cur = con.cursor()
-      cur.execute("INSERT INTO students (name) VALUES (?)",(bob))
-      con.commit()
-      msg = "Done"
-"""
+
 DIRETORIO_UPLOAD = "static/img"
 
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
-session = DBSession()
 app = Flask(__name__)
 
 imagemUpload = UploadSet("imagem", IMAGES)
@@ -55,9 +45,10 @@ def arquivoPermitido(arquivo):
 @app.route("/")
 @app.route("/categorias/")
 def showCategorias():
+    session = DBSession()
     todasCategorias = session.query(Categoria).all()
     itensRecentes = session.query(Item).order_by(Item.id.desc()).limit(8).all()
-
+    session.close()
     pagina = "showCategorias.html"
     if "usuario_id" not in login_session:
         pagina = "showCategoriasPublica.html"
@@ -176,7 +167,6 @@ def loginUsuario():
 
 @app.route("/logout/")
 def logoutUsuario():
-
     access_token = login_session.get("access_token")
     if access_token is None:
         flash(u"Usuário não conectado.")
@@ -204,25 +194,31 @@ def logoutUsuario():
 
 
 def newUsuario(login_session):
+    session = DBSession()
     newUsuario = Usuario(
         nome=login_session["nome"], email=login_session["email"],
         imagem=login_session["imagem"])
     session.add(newUsuario)
     session.commit()
     usuario = session.query(
-        Usuario).filter_by(email=login_session["email"]).one_or_none_or_none()
+        Usuario).filter_by(email=login_session["email"]).one_or_none()
+    session.close()
     return usuario.id
 
 
 def getUsuario(usuario_id):
+    session = DBSession()
     usuario = session.query(
-        Usuario).filter_by(id=usuario_id).one_or_none_or_none()
+        Usuario).filter_by(id=usuario_id).one_or_none()
+    session.close()
     return usuario
 
 
 def getUsuarioId(email):
+    session = DBSession()
     usuario = session.query(
-        Usuario).filter_by(email=email).one_or_none_or_none()
+        Usuario).filter_by(email=email).one_or_none()
+    session.close()
     if usuario is None:
         return None
     else:
@@ -234,10 +230,12 @@ def newCategoria():
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
     if request.method == "POST":
+        session = DBSession()
         umUsuario = getUsuario(login_session["usuario_id"])
         newCategoria = Categoria(nome=request.form["nome"], usuario=umUsuario)
         session.add(newCategoria)
         session.commit()
+        session.close()
         flash("Nova categoria criada!")
         return redirect(url_for("showCategorias"))
 
@@ -246,14 +244,16 @@ def newCategoria():
 
 @app.route("/categorias/<int:categoria>/")
 def showCategoria(categoria):
+    session = DBSession()
     todasCategorias = session.query(Categoria).all()
     umaCategoria = session.query(
-        Categoria).filter_by(id=categoria).one_or_none_or_none()
+        Categoria).filter_by(id=categoria).one_or_none()
     # verifica se a categoria existe no banco, senão, retorna
     # para a página de categorias
     if umaCategoria is None:
         return showCategorias()
     seusItens = session.query(Item).filter_by(categoria_id=categoria).all()
+    session.close()
     # verifica se há algun usuário logado. se sim, renderiza a página
     # de usuário, senão, renderiza a página pública
     if "usuario_id" not in login_session:
@@ -272,8 +272,9 @@ def editCategoria(categoria):
     # é dono desta categoria
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
+    session = DBSession()
     umaCategoria = session.query(
-        Categoria).filter_by(id=categoria).one_or_none_or_none()
+        Categoria).filter_by(id=categoria).one_or_none()
     if umaCategoria is None:
         return showCategorias()
     if login_session["usuario_id"] != umaCategoria.usuario_id:
@@ -284,6 +285,7 @@ def editCategoria(categoria):
         umaCategoria.nome = request.form["nome"]
         session.add(umaCategoria)
         session.commit()
+        session.close()
         flash("A categoria foi editada!")
         return redirect(url_for("showCategoria", categoria=umaCategoria.id))
     else:
@@ -296,8 +298,9 @@ def deleteCategoria(categoria):
     # é dono desta categoria
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
+    session = DBSession()
     umaCategoria = session.query(
-        Categoria).filter_by(id=categoria).one_or_none_or_none()
+        Categoria).filter_by(id=categoria).one_or_none()
     if umaCategoria is None:
         return showCategorias()
     if login_session["usuario_id"] != umaCategoria.usuario_id:
@@ -320,6 +323,7 @@ def deleteCategoria(categoria):
         session.query(Item).filter_by(categoria_id=categoria).delete()
         session.delete(umaCategoria)
         session.commit()
+        session.close()
         flash(u"A categoria foi excluída! Seus itens também foram excluídos!")
         return redirect(url_for("showCategorias"))
     else:
@@ -328,8 +332,10 @@ def deleteCategoria(categoria):
 
 @app.route("/categorias/<int:categoria>/<int:item>/")
 def showItem(categoria, item):
+    session = DBSession()
     umItem = session.query(Item).filter_by(
         id=item, categoria_id=categoria).one_or_none()
+    session.close()
     if umItem is None:
         return showCategoria(categoria=categoria)
     else:
@@ -346,8 +352,9 @@ def newItem(categoria):
     # é dono desta categoria
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
+    session = DBSession()
     umaCategoria = session.query(
-        Categoria).filter_by(id=categoria).one_or_none_or_none()
+        Categoria).filter_by(id=categoria).one_or_none()
     if umaCategoria is None:
         return showCategorias()
     if login_session["usuario_id"] != umaCategoria.usuario_id:
@@ -379,7 +386,7 @@ def newItem(categoria):
             newItem.imagem = imagem_nome
             session.add(newItem)
             session.commit()
-
+        session.close()
         flash("Novo item criado!")
         return redirect(url_for("showCategoria", categoria=categoria))
     else:
@@ -393,8 +400,9 @@ def editItem(categoria, item):
     # é dono deste item
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
+    session = DBSession()
     umItem = session.query(Item).filter_by(
-        id=item, categoria_id=categoria).one_or_none_or_none()
+        id=item, categoria_id=categoria).one_or_none()
     if umItem is None:
         return showCategoria(categoria=categoria)
     if login_session["usuario_id"] != umItem.usuario_id:
@@ -428,6 +436,7 @@ def editItem(categoria, item):
         umItem.descricao = request.form["descricao"]
         session.add(umItem)
         session.commit()
+        session.close()
         flash("O item foi editado!")
         return redirect(url_for("showCategoria", categoria=categoria))
     else:
@@ -441,8 +450,9 @@ def deleteItem(categoria, item):
     # é dono deste item
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
+    session = DBSession()
     umItem = session.query(Item).filter_by(
-        id=item, categoria_id=categoria).one_or_none_or_none()
+        id=item, categoria_id=categoria).one_or_none()
     if umItem is None:
         return showCategoria(categoria=categoria)
     if login_session["usuario_id"] != umItem.usuario_id:
@@ -458,6 +468,7 @@ def deleteItem(categoria, item):
                 pass
         session.delete(umItem)
         session.commit()
+        session.close()
         flash(u"O item foi excluído!")
         return redirect(url_for("showCategoria", categoria=categoria))
     else:
@@ -466,6 +477,7 @@ def deleteItem(categoria, item):
 
 @app.route("/api/v1/categorias")
 def jsonCategorias():
+    session = DBSession()
     categorias = session.query(Categoria).all()
     categoriasSerializadas = []
     # serializa cada item das categorias, e depois cria uma lista
@@ -479,12 +491,13 @@ def jsonCategorias():
         categoriaSerializada = c.serialize
         categoriaSerializada["itens"] = itensSerializados
         categoriasSerializadas.append(categoriaSerializada)
-
+    session.close()
     return jsonify(categorias=categoriasSerializadas)
 
 
 @app.route("/api/v1/categorias/<int:categoria>")
 def jsonCategoria(categoria):
+    session = DBSession()
     categoria = session.query(Categoria).filter_by(id=categoria).one_or_none()
     itens = session.query(Item).filter_by(categoria_id=categoria.id).all()
     # serializa cada item das categoria, e depois cria uma lista
@@ -494,15 +507,16 @@ def jsonCategoria(categoria):
         itensSerializados.append(i.serialize)
     categoriaSerializada = categoria.serialize
     categoriaSerializada["itens"] = itensSerializados
-
+    session.close()
     return jsonify(categoria=categoriaSerializada)
 
 
 @app.route("/api/v1/categorias/<int:categoria>/<int:item>")
 def jsonItem(categoria, item):
+    session = DBSession()
     item = session.query(
         Item).filter_by(id=item, categoria_id=categoria).one_or_none()
-
+    session.close()
     return jsonify(item=item.serialize)
 
 

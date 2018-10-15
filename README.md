@@ -18,11 +18,12 @@ Na hora de criar o ID, dentro de Restrições:
 ## Como executar o webserver
 - Execute `python app.py`. Depois, você poderá acessar localmente o site em http://localhost:5000
 
-## Bugs
-Está sendo feita a transição da versão mais atualizada do flask e sqlalchemy, tendo que assim corrigir erros de multithread como o:
-```
-ProgrammingError: (sqlite3.ProgrammingError) SQLite objects created in a thread can only be used in that same thread.
-```
+## TODOs
+- Converter a estrutura do aplicativo para de grande escala
+- Utilizar blueprints
+- Utilizar errorhandler
+- Utilizar flask-restful para as APIs
+- Utilizar o SQL-Alchemy
 
 ## Dúvidas
  - Caso há alguma dúvida em relação a este repositório, envie para gior.grs@gmail.com
