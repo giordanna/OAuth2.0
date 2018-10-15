@@ -9,16 +9,20 @@ Na hora de criar o ID, dentro de Restrições:
 - Insira na seção de Origens JavaScript autorizadas o endereço http://localhost:5000;
 - Insira na seção de URIs de redirecionamento autorizados os endereços http://localhost:5000 e http://localhost:5000/login.
 
-### Como instalar e executar a máquina virtual
+## Como instalar
 - Baixe ou clone este repositório usando `git clone https://github.com/giordanna/projeto-catalogo.git`;
-- Dentro do diretório, instale a máquina virtual do vagrant com `vagrant up`;
-- Em seguida, execute com `vagrant ssh`.
-
-### Como executar o webserver
-- Entre na pasta compartilhada da máquina virtual em seu terminal usando `cd /vagrant`;
+- Dentro do diretório, instale as dependências usando `pip install -r requirements.txt`;
 - Execute `python configuracao_db.py` para gerar o banco de dados do sqlite;
 - Caso deseje, popule o webserver executando `python popular_db.py` para gerar vários itens e categorias mockup. Você pode modificar o email do usuário neste arquivo para o seu equivalente, podendo assim editar excluir itens e categorias;
+
+## Como executar o webserver
 - Execute `python app.py`. Depois, você poderá acessar localmente o site em http://localhost:5000
 
-### Dúvidas
+## Bugs
+Está sendo feita a transição da versão mais atualizada do flask e sqlalchemy, tendo que assim corrigir erros de multithread como o:
+```
+ProgrammingError: (sqlite3.ProgrammingError) SQLite objects created in a thread can only be used in that same thread.
+```
+
+## Dúvidas
  - Caso há alguma dúvida em relação a este repositório, envie para gior.grs@gmail.com

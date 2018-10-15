@@ -19,9 +19,18 @@ import random
 import string
 import hashlib
 import os
-from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
+from flask_uploads import UploadSet, configure_uploads, IMAGES
 
-
+"""
+  @app.route('/')
+  def dostuff():
+    with sql.connect("database.db") as con:
+      name = "bob"
+      cur = con.cursor()
+      cur.execute("INSERT INTO students (name) VALUES (?)",(bob))
+      con.commit()
+      msg = "Done"
+"""
 DIRETORIO_UPLOAD = "static/img"
 
 Base.metadata.bind = engine
@@ -200,22 +209,24 @@ def newUsuario(login_session):
         imagem=login_session["imagem"])
     session.add(newUsuario)
     session.commit()
-    usuario = session.query(Usuario).filter_by(
-                                        email=login_session["email"]).one()
+    usuario = session.query(
+        Usuario).filter_by(email=login_session["email"]).one_or_none_or_none()
     return usuario.id
 
 
 def getUsuario(usuario_id):
-    usuario = session.query(Usuario).filter_by(id=usuario_id).one()
+    usuario = session.query(
+        Usuario).filter_by(id=usuario_id).one_or_none_or_none()
     return usuario
 
 
 def getUsuarioId(email):
-    try:
-        usuario = session.query(Usuario).filter_by(email=email).one()
-        return usuario.id
-    except:
+    usuario = session.query(
+        Usuario).filter_by(email=email).one_or_none_or_none()
+    if usuario is None:
         return None
+    else:
+        return usuario.id
 
 
 @app.route("/categorias/new/", methods=["GET", "POST"])
@@ -236,7 +247,8 @@ def newCategoria():
 @app.route("/categorias/<int:categoria>/")
 def showCategoria(categoria):
     todasCategorias = session.query(Categoria).all()
-    umaCategoria = session.query(Categoria).filter_by(id=categoria).one()
+    umaCategoria = session.query(
+        Categoria).filter_by(id=categoria).one_or_none_or_none()
     # verifica se a categoria existe no banco, senão, retorna
     # para a página de categorias
     if umaCategoria is None:
@@ -260,7 +272,8 @@ def editCategoria(categoria):
     # é dono desta categoria
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
-    umaCategoria = session.query(Categoria).filter_by(id=categoria).one()
+    umaCategoria = session.query(
+        Categoria).filter_by(id=categoria).one_or_none_or_none()
     if umaCategoria is None:
         return showCategorias()
     if login_session["usuario_id"] != umaCategoria.usuario_id:
@@ -283,7 +296,8 @@ def deleteCategoria(categoria):
     # é dono desta categoria
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
-    umaCategoria = session.query(Categoria).filter_by(id=categoria).one()
+    umaCategoria = session.query(
+        Categoria).filter_by(id=categoria).one_or_none_or_none()
     if umaCategoria is None:
         return showCategorias()
     if login_session["usuario_id"] != umaCategoria.usuario_id:
@@ -315,7 +329,7 @@ def deleteCategoria(categoria):
 @app.route("/categorias/<int:categoria>/<int:item>/")
 def showItem(categoria, item):
     umItem = session.query(Item).filter_by(
-        id=item, categoria_id=categoria).one()
+        id=item, categoria_id=categoria).one_or_none()
     if umItem is None:
         return showCategoria(categoria=categoria)
     else:
@@ -332,7 +346,8 @@ def newItem(categoria):
     # é dono desta categoria
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
-    umaCategoria = session.query(Categoria).filter_by(id=categoria).one()
+    umaCategoria = session.query(
+        Categoria).filter_by(id=categoria).one_or_none_or_none()
     if umaCategoria is None:
         return showCategorias()
     if login_session["usuario_id"] != umaCategoria.usuario_id:
@@ -379,7 +394,7 @@ def editItem(categoria, item):
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
     umItem = session.query(Item).filter_by(
-        id=item, categoria_id=categoria).one()
+        id=item, categoria_id=categoria).one_or_none_or_none()
     if umItem is None:
         return showCategoria(categoria=categoria)
     if login_session["usuario_id"] != umItem.usuario_id:
@@ -427,7 +442,7 @@ def deleteItem(categoria, item):
     if "usuario_id" not in login_session:
         return redirect(url_for("loginUsuario"))
     umItem = session.query(Item).filter_by(
-        id=item, categoria_id=categoria).one()
+        id=item, categoria_id=categoria).one_or_none_or_none()
     if umItem is None:
         return showCategoria(categoria=categoria)
     if login_session["usuario_id"] != umItem.usuario_id:
@@ -470,7 +485,7 @@ def jsonCategorias():
 
 @app.route("/api/v1/categorias/<int:categoria>")
 def jsonCategoria(categoria):
-    categoria = session.query(Categoria).filter_by(id=categoria).one()
+    categoria = session.query(Categoria).filter_by(id=categoria).one_or_none()
     itens = session.query(Item).filter_by(categoria_id=categoria.id).all()
     # serializa cada item das categoria, e depois cria uma lista
     # de itens serializados para juntar com a categoria serializada
@@ -485,7 +500,8 @@ def jsonCategoria(categoria):
 
 @app.route("/api/v1/categorias/<int:categoria>/<int:item>")
 def jsonItem(categoria, item):
-    item = session.query(Item).filter_by(id=item, categoria_id=categoria).one()
+    item = session.query(
+        Item).filter_by(id=item, categoria_id=categoria).one_or_none()
 
     return jsonify(item=item.serialize)
 
