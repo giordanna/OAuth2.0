@@ -26,3 +26,6 @@ ProgrammingError: (sqlite3.ProgrammingError) SQLite objects created in a thread 
 
 ## Dúvidas
  - Caso há alguma dúvida em relação a este repositório, envie para gior.grs@gmail.com
+
+## Licença
+[MIT](LICENSE)
