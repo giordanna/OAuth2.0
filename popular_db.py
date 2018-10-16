@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
 
-from configuracao_db import Base, Usuario, Categoria, Item, engine
+from catalogo.configuracao_db import (
+    Base, Usuario, Categoria, Item, engine
+)
 from sqlalchemy.orm import sessionmaker
 
 Base.metadata.bind = engine

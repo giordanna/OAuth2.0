@@ -9,14 +9,20 @@ Na hora de criar o ID, dentro de Restrições:
 - Insira na seção de Origens JavaScript autorizadas o endereço http://localhost:5000;
 - Insira na seção de URIs de redirecionamento autorizados os endereços http://localhost:5000 e http://localhost:5000/login.
 
+## Definindo variáveis de ambiente
+- Bash (Linux, Mac, etc): `export FLASK_APP=catalogo`
+- Windows CMD: `set FLASK_APP=catalogo`
+- Windows PowerShell: `$env:FLASK_APP = "catalogo"`
+
+
 ## Como instalar
 - Baixe ou clone este repositório usando `git clone https://github.com/giordanna/projeto-catalogo.git`;
 - Dentro do diretório, instale as dependências usando `pip install -r requirements.txt`;
-- Execute `python configuracao_db.py` para gerar o banco de dados do sqlite;
-- Caso deseje, popule o webserver executando `python popular_db.py` para gerar vários itens e categorias mockup. Você pode modificar o email do usuário neste arquivo para o seu equivalente, podendo assim editar excluir itens e categorias;
+- Agora instale a aplicação com `pip install -e .`;
+- Caso deseje, popule o webserver executando `python popular_db.py` para gerar vários itens e categorias mockup. Você pode modificar o email do usuário neste arquivo para o seu equivalente, podendo assim editar excluir itens e categorias.
 
 ## Como executar o webserver
-- Execute `python app.py`. Depois, você poderá acessar localmente o site em http://localhost:5000
+- Execute `flask run`. Depois, você poderá acessar localmente o site em http://localhost:5000
 
 ## TODOs
 - Converter a estrutura do aplicativo para de grande escala
