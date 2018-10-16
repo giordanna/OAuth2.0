@@ -16,21 +16,19 @@ parser.add_argument('erro')
 
 class ListaCategorias(Resource):
     def get(self):
-        session = DBSession()
-        categorias = session.query(Categoria).all()
+        categorias = Categoria.query.all()
         categoriasSerializadas = []
         # serializa cada item das categorias, e depois cria uma lista
         # de itens serializados para juntar com a categoria serializada
         # correspondente
         for c in categorias:
-            itens = session.query(Item).filter_by(categoria_id=c.id).all()
+            itens = Item.query.filter_by(categoria_id=c.id).all()
             itensSerializados = []
             for i in itens:
                 itensSerializados.append(i.serialize)
             categoriaSerializada = c.serialize
             categoriaSerializada["itens"] = itensSerializados
             categoriasSerializadas.append(categoriaSerializada)
-        session.close()
         return {
             "categorias": categoriasSerializadas
         }
@@ -38,11 +36,9 @@ class ListaCategorias(Resource):
 
 class UmaCategoria(Resource):
     def get(self, categoria):
-        session = DBSession()
-        categoria = session.query(
-            Categoria).filter_by(id=categoria).one_or_none()
+        categoria = Categoria.query.filter_by(id=categoria).one_or_none()
         abortarSeForNulo(categoria)
-        itens = session.query(Item).filter_by(categoria_id=categoria.id).all()
+        itens = Item.query.filter_by(categoria_id=categoria.id).all()
         # serializa cada item das categoria, e depois cria uma lista
         # de itens serializados para juntar com a categoria serializada
         itensSerializados = []
@@ -50,7 +46,6 @@ class UmaCategoria(Resource):
             itensSerializados.append(i.serialize)
         categoriaSerializada = categoria.serialize
         categoriaSerializada["itens"] = itensSerializados
-        session.close()
         return {
             "categoria": categoriaSerializada
         }
@@ -58,11 +53,9 @@ class UmaCategoria(Resource):
 
 class UmItem(Resource):
     def get(self, categoria, item):
-        session = DBSession()
-        item = session.query(
-            Item).filter_by(id=item, categoria_id=categoria).one_or_none()
+        item = Item.query.filter_by(
+            id=item, categoria_id=categoria).one_or_none()
         abortarSeForNulo(item)
-        session.close()
         return {
             "item": item.serialize
         }

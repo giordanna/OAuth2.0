@@ -11,10 +11,8 @@ def arquivoPermitido(arquivo):
 
 @app.route("/categorias/<int:categoria>/<int:item>/")
 def showItem(categoria, item):
-    session = DBSession()
-    umItem = session.query(Item).filter_by(
+    umItem = Item.query.filter_by(
         id=item, categoria_id=categoria).one_or_none()
-    session.close()
     if umItem is None:
         flash(u"Erro: O item que você está tentando acessar não existe!")
         return redirect(url_for("showCategoria", categoria=categoria))
@@ -33,9 +31,7 @@ def newItem(categoria):
     if "usuario_id" not in login_session:
         flash(u"Você precisa estar logado para acessar esta página.")
         return redirect(url_for("loginUsuario"))
-    session = DBSession()
-    umaCategoria = session.query(
-        Categoria).filter_by(id=categoria).one_or_none()
+    umaCategoria = Categoria.query.filter_by(id=categoria).one_or_none()
     if umaCategoria is None:
         flash(u"Erro: A categoria que você está tentando acessar não existe!")
         return redirect(url_for("showCategorias"))
@@ -50,10 +46,10 @@ def newItem(categoria):
             nome=request.form["nome"], descricao=request.form["descricao"],
             imagem="item_sem_imagem.png", categoria=umaCategoria,
             usuario=umUsuario)
-        session.add(newItem)
-        session.flush()
+        db.session.add(newItem)
+        db.session.flush()
         item_id = newItem.id
-        session.commit()
+        db.session.commit()
 
         # se o usuário enviar uma imagem, envia para o servidor
         # com o nome equivalente ao seu id em hash
@@ -66,11 +62,11 @@ def newItem(categoria):
                 str(item_id)).hexdigest() + "." + tipo_imagem
             imagemUpload.save(arquivo, name=imagem_nome)
             newItem.imagem = imagem_nome
-            session.add(newItem)
-            session.commit()
-        session.close()
+            db.session.add(newItem)
+            db.session.commit()
         flash("Novo item criado!")
-        return redirect(url_for("showCategoria", categoria=categoria))
+        return redirect(url_for(
+            "showItem", categoria=categoria, item=newItem.id))
     else:
         return render_template("newItem.html", categoria=umaCategoria)
 
@@ -83,8 +79,7 @@ def editItem(categoria, item):
     if "usuario_id" not in login_session:
         flash(u"Você precisa estar logado para acessar esta página.")
         return redirect(url_for("loginUsuario"))
-    session = DBSession()
-    umItem = session.query(Item).filter_by(
+    umItem = Item.query.filter_by(
         id=item, categoria_id=categoria).one_or_none()
     if umItem is None:
         flash(u"Erro: O item que você está tentando acessar não existe!")
@@ -118,9 +113,8 @@ def editItem(categoria, item):
 
         umItem.nome = request.form["nome"]
         umItem.descricao = request.form["descricao"]
-        session.add(umItem)
-        session.commit()
-        session.close()
+        db.session.add(umItem)
+        db.session.commit()
         flash("O item foi editado!")
         return redirect(url_for("showItem", categoria=categoria, item=item))
     else:
@@ -135,8 +129,7 @@ def deleteItem(categoria, item):
     if "usuario_id" not in login_session:
         flash(u"Você precisa estar logado para acessar esta página.")
         return redirect(url_for("loginUsuario"))
-    session = DBSession()
-    umItem = session.query(Item).filter_by(
+    umItem = Item.query.filter_by(
         id=item, categoria_id=categoria).one_or_none()
     if umItem is None:
         flash(u"Erro: O item que você está tentando acessar não existe!")
@@ -152,9 +145,8 @@ def deleteItem(categoria, item):
                     app.config["UPLOADED_IMAGEM_DEST"], umItem.imagem))
             except OSError:
                 pass
-        session.delete(umItem)
-        session.commit()
-        session.close()
+        db.session.delete(umItem)
+        db.session.commit()
         flash(u"O item foi excluído!")
         return redirect(url_for("showCategoria", categoria=categoria))
     else:

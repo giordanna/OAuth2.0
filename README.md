@@ -26,7 +26,6 @@ Na hora de criar o ID, dentro de Restrições:
 
 ## TODOs
 - Utilizar blueprints
-- Utilizar o SQL-Alchemy
 
 ## Dúvidas
  - Caso há alguma dúvida em relação a este repositório, envie para gior.grs@gmail.com

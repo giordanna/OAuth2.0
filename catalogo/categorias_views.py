@@ -7,10 +7,8 @@ from catalogo import *
 @app.route("/")
 @app.route("/categorias/")
 def showCategorias():
-    session = DBSession()
-    todasCategorias = session.query(Categoria).all()
-    itensRecentes = session.query(Item).order_by(Item.id.desc()).limit(8).all()
-    session.close()
+    todasCategorias = Categoria.query.all()
+    itensRecentes = Item.query.order_by(Item.id.desc()).limit(8).all()
     pagina = "showCategorias.html"
     if "usuario_id" not in login_session:
         pagina = "showCategoriasPublica.html"
@@ -24,12 +22,10 @@ def newCategoria():
         flash(u"Você precisa estar logado para acessar esta página.")
         return redirect(url_for("loginUsuario"))
     if request.method == "POST":
-        session = DBSession()
         umUsuario = getUsuario(login_session["usuario_id"])
         newCategoria = Categoria(nome=request.form["nome"], usuario=umUsuario)
-        session.add(newCategoria)
-        session.commit()
-        session.close()
+        db.session.add(newCategoria)
+        db.session.commit()
         flash("Nova categoria criada!")
         return redirect(url_for("showCategorias"))
 
@@ -38,17 +34,14 @@ def newCategoria():
 
 @app.route("/categorias/<int:categoria>/")
 def showCategoria(categoria):
-    session = DBSession()
-    todasCategorias = session.query(Categoria).all()
-    umaCategoria = session.query(
-        Categoria).filter_by(id=categoria).one_or_none()
+    todasCategorias = Categoria.query.all()
+    umaCategoria = Categoria.query.filter_by(id=categoria).one_or_none()
     # verifica se a categoria existe no banco, senão, retorna
     # para a página de categorias
     if umaCategoria is None:
         flash(u"Erro: A categoria você está tentando acessar não existe!")
         return redirect(url_for("showCategorias"))
-    seusItens = session.query(Item).filter_by(categoria_id=categoria).all()
-    session.close()
+    seusItens = Item.query.filter_by(categoria_id=categoria).all()
     # verifica se há algun usuário logado. se sim, renderiza a página
     # de usuário, senão, renderiza a página pública
     if "usuario_id" not in login_session:
@@ -68,9 +61,7 @@ def editCategoria(categoria):
     if "usuario_id" not in login_session:
         flash(u"Você precisa estar logado para acessar esta página.")
         return redirect(url_for("loginUsuario"))
-    session = DBSession()
-    umaCategoria = session.query(
-        Categoria).filter_by(id=categoria).one_or_none()
+    umaCategoria = Categoria.query.filter_by(id=categoria).one_or_none()
     if umaCategoria is None:
         flash(u"Erro: A categoria você está tentando acessar não existe!")
         return redirect(url_for("showCategorias"))
@@ -80,9 +71,8 @@ def editCategoria(categoria):
 
     if request.method == "POST":
         umaCategoria.nome = request.form["nome"]
-        session.add(umaCategoria)
-        session.commit()
-        session.close()
+        db.session.add(umaCategoria)
+        db.session.commit()
         flash("A categoria foi editada!")
         return redirect(url_for("showCategoria", categoria=umaCategoria.id))
     else:
@@ -96,9 +86,7 @@ def deleteCategoria(categoria):
     if "usuario_id" not in login_session:
         flash(u"Você precisa estar logado para acessar esta página.")
         return redirect(url_for("loginUsuario"))
-    session = DBSession()
-    umaCategoria = session.query(
-        Categoria).filter_by(id=categoria).one_or_none()
+    umaCategoria = Categoria.query.filter_by(id=categoria).one_or_none()
     if umaCategoria is None:
         flash(u"Erro: A categoria você está tentando acessar não existe!")
         return redirect(url_for("showCategorias"))
@@ -107,7 +95,7 @@ def deleteCategoria(categoria):
         return redirect(url_for("showCategoria", categoria=umaCategoria.id))
 
     if request.method == "POST":
-        itens = session.query(Item).filter_by(categoria_id=categoria).all()
+        itens = Item.query.filter_by(categoria_id=categoria).all()
         # verifica se cada item a se deletado possui uma imagem
         # customizada. se sim, ela deve ser excluída do servidor
         for i in itens:
@@ -119,10 +107,9 @@ def deleteCategoria(categoria):
                 except OSError:
                     pass
 
-        session.query(Item).filter_by(categoria_id=categoria).delete()
-        session.delete(umaCategoria)
-        session.commit()
-        session.close()
+        Item.query.filter_by(categoria_id=categoria).delete()
+        db.session.delete(umaCategoria)
+        db.session.commit()
         flash(u"A categoria foi excluída! Seus itens também foram excluídos!")
         return redirect(url_for("showCategorias"))
     else:

@@ -15,7 +15,7 @@ def loginUsuario():
                 u"Parâmetro de state inválido."), 401)
             response.headers["Content-Type"] = "application/json"
             return response
-        # Obtain authorization code
+        # obtêm código de autorização
         code = request.data
 
         try:
@@ -142,23 +142,18 @@ def logoutUsuario():
 
 
 def newUsuario(login_session):
-    session = DBSession()
     newUsuario = Usuario(
         nome=login_session["nome"], email=login_session["email"],
         imagem=login_session["imagem"])
-    session.add(newUsuario)
-    session.commit()
-    usuario = session.query(
-        Usuario).filter_by(email=login_session["email"]).one_or_none()
-    session.close()
+    db.session.add(newUsuario)
+    db.session.commit()
+    usuario = Usuario.query.filter_by(
+        email=login_session["email"]).one_or_none()
     return usuario.id
 
 
 def getUsuarioId(email):
-    session = DBSession()
-    usuario = session.query(
-        Usuario).filter_by(email=email).one_or_none()
-    session.close()
+    usuario = Usuario.query.filter_by(email=email).one_or_none()
     if usuario is None:
         return None
     else:
