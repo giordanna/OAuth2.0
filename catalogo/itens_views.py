@@ -16,7 +16,8 @@ def showItem(categoria, item):
         id=item, categoria_id=categoria).one_or_none()
     session.close()
     if umItem is None:
-        return showCategoria(categoria=categoria)
+        flash(u"Erro: O item que você está tentando acessar não existe!")
+        return redirect(url_for("showCategoria", categoria=categoria))
     else:
         if "usuario_id" not in login_session:
             return render_template("showItemPublica.html", item=umItem)
@@ -30,15 +31,17 @@ def newItem(categoria):
     # verifica se há algum usuário logado, e depois se tal usuário
     # é dono desta categoria
     if "usuario_id" not in login_session:
+        flash(u"Você precisa estar logado para acessar esta página.")
         return redirect(url_for("loginUsuario"))
     session = DBSession()
     umaCategoria = session.query(
         Categoria).filter_by(id=categoria).one_or_none()
     if umaCategoria is None:
-        return showCategorias()
+        flash(u"Erro: A categoria que você está tentando acessar não existe!")
+        return redirect(url_for("showCategorias"))
     if login_session["usuario_id"] != umaCategoria.usuario_id:
         flash(u"Você não é o dono desta categoria.")
-        return showCategoria(categoria=umaCategoria.id)
+        return redirect(url_for("showCategoria", categoria=umaCategoria.id))
 
     if request.method == "POST":
         umUsuario = getUsuario(login_session["usuario_id"])
@@ -78,15 +81,17 @@ def editItem(categoria, item):
     # verifica se há algum usuário logado, e depois se tal usuário
     # é dono deste item
     if "usuario_id" not in login_session:
+        flash(u"Você precisa estar logado para acessar esta página.")
         return redirect(url_for("loginUsuario"))
     session = DBSession()
     umItem = session.query(Item).filter_by(
         id=item, categoria_id=categoria).one_or_none()
     if umItem is None:
-        return showCategoria(categoria=categoria)
+        flash(u"Erro: O item que você está tentando acessar não existe!")
+        return redirect(url_for("showCategoria", categoria=categoria))
     if login_session["usuario_id"] != umItem.usuario_id:
         flash(u"Você não é o dono desta categoria.")
-        return showCategoria(categoria=categoria)
+        return redirect(url_for("showItem", categoria=categoria, item=item))
 
     if request.method == "POST":
 
@@ -117,7 +122,7 @@ def editItem(categoria, item):
         session.commit()
         session.close()
         flash("O item foi editado!")
-        return redirect(url_for("showCategoria", categoria=categoria))
+        return redirect(url_for("showItem", categoria=categoria, item=item))
     else:
         return render_template("editItem.html", item=umItem)
 
@@ -128,15 +133,17 @@ def deleteItem(categoria, item):
     # verifica se há algum usuário logado, e depois se tal usuário
     # é dono deste item
     if "usuario_id" not in login_session:
+        flash(u"Você precisa estar logado para acessar esta página.")
         return redirect(url_for("loginUsuario"))
     session = DBSession()
     umItem = session.query(Item).filter_by(
         id=item, categoria_id=categoria).one_or_none()
     if umItem is None:
-        return showCategoria(categoria=categoria)
+        flash(u"Erro: O item que você está tentando acessar não existe!")
+        redirect(url_for("showCategoria", categoria=categoria))
     if login_session["usuario_id"] != umItem.usuario_id:
         flash(u"Você não é o dono desta categoria.")
-        return showCategoria(categoria=categoria)
+        return redirect(url_for("showItem", categoria=categoria, item=item))
 
     if request.method == "POST":
         if umItem.imagem != "item_sem_imagem.png":
@@ -152,4 +159,3 @@ def deleteItem(categoria, item):
         return redirect(url_for("showCategoria", categoria=categoria))
     else:
         return render_template("deleteItem.html", item=umItem)
-

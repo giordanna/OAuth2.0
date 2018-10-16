@@ -3,6 +3,7 @@
 
 from catalogo import *
 
+
 @app.route("/")
 @app.route("/categorias/")
 def showCategorias():
@@ -20,6 +21,7 @@ def showCategorias():
 @app.route("/categorias/new/", methods=["GET", "POST"])
 def newCategoria():
     if "usuario_id" not in login_session:
+        flash(u"Você precisa estar logado para acessar esta página.")
         return redirect(url_for("loginUsuario"))
     if request.method == "POST":
         session = DBSession()
@@ -43,7 +45,8 @@ def showCategoria(categoria):
     # verifica se a categoria existe no banco, senão, retorna
     # para a página de categorias
     if umaCategoria is None:
-        return showCategorias()
+        flash(u"Erro: A categoria você está tentando acessar não existe!")
+        return redirect(url_for("showCategorias"))
     seusItens = session.query(Item).filter_by(categoria_id=categoria).all()
     session.close()
     # verifica se há algun usuário logado. se sim, renderiza a página
@@ -63,15 +66,17 @@ def editCategoria(categoria):
     # verifica se há algum usuário logado, e depois se tal usuário
     # é dono desta categoria
     if "usuario_id" not in login_session:
+        flash(u"Você precisa estar logado para acessar esta página.")
         return redirect(url_for("loginUsuario"))
     session = DBSession()
     umaCategoria = session.query(
         Categoria).filter_by(id=categoria).one_or_none()
     if umaCategoria is None:
-        return showCategorias()
+        flash(u"Erro: A categoria você está tentando acessar não existe!")
+        return redirect(url_for("showCategorias"))
     if login_session["usuario_id"] != umaCategoria.usuario_id:
         flash(u"Você não é o dono desta categoria.")
-        return showCategoria(categoria=umaCategoria.id)
+        return redirect(url_for("showCategoria", categoria=umaCategoria.id))
 
     if request.method == "POST":
         umaCategoria.nome = request.form["nome"]
@@ -89,15 +94,17 @@ def deleteCategoria(categoria):
     # verifica se há algum usuário logado, e depois se tal usuário
     # é dono desta categoria
     if "usuario_id" not in login_session:
+        flash(u"Você precisa estar logado para acessar esta página.")
         return redirect(url_for("loginUsuario"))
     session = DBSession()
     umaCategoria = session.query(
         Categoria).filter_by(id=categoria).one_or_none()
     if umaCategoria is None:
-        return showCategorias()
+        flash(u"Erro: A categoria você está tentando acessar não existe!")
+        return redirect(url_for("showCategorias"))
     if login_session["usuario_id"] != umaCategoria.usuario_id:
         flash(u"Você não é o dono desta categoria.")
-        return showCategoria(categoria=umaCategoria.id)
+        return redirect(url_for("showCategoria", categoria=umaCategoria.id))
 
     if request.method == "POST":
         itens = session.query(Item).filter_by(categoria_id=categoria).all()

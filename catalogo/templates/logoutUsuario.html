@@ -35,27 +35,26 @@
 		</div>
 	</main>
 
-		<script>
+	<script>
 
-			function onLoad() {
-				gapi.load('auth2', function() {
-					gapi.auth2.init();
+		function onLoad() {
+			gapi.load('auth2', function() {
+				gapi.auth2.init();
 
-					setTimeout (function () {
-						signOut();
-					}, 4000);
-				});
-			}
+				setTimeout (function () {
+					signOut();
+				}, 4000);
+			});
+		}
 
-			function signOut() {
-				var auth2 = gapi.auth2.getAuthInstance();
-				auth2.signOut().then(function () {
-					window.location = "{{ url_for("showCategorias") }}";
-				});
-			};
+		function signOut() {
+			var auth2 = gapi.auth2.getAuthInstance();
+			auth2.signOut().then(function () {
+				window.location = "{{ url_for("showCategorias") }}";
+			});
+		};
 
-		</script>
-	</main>
+	</script>
 
 </body>
 </html>

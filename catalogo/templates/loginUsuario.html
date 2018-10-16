@@ -21,88 +21,86 @@
 <body>
 
 	<main class="container">
-			<br>
-			<div class="tile is-ancestor">
-				<div class="tile is-vertical">
-					<div class="tile">
-						<div class="tile is-parent is-vertical">
-							<article class="tile is-child notification is-primary">
-								<p class="title">Login</p>
-								<p class="subtitle">Faça login com a sua conta do Google+</p>
-							</article>
-							<article class="tile is-child is-centered">
-								<!-- botão de login do google -->
-								<div id="signinButton">
-									<span class="g-signin2"
-										data-scope="openid email"
-										data-clientid="{{ id_cliente }}"
-										data-redirecturi="postmessage"
-										data-accesstype="offline"
-										data-cookiepolicy="single_host_origin"
-										data-onsuccess="signInSuccess"
-										data-onfailure="signInFailure"
-										data-theme="light"
-										data-width="300"
-										data-height="75"
-										data-longtitle="true">
-									</span>
-								</div>
+		<br>
 
-								<div id="resultado"></div>
-							</article>
-							<article class="tile is-child" id="botaoVoltar">
-								<div class="control">
-									<a href="/">
-										<button type="button" class="button is-text">Voltar</button>
-									</a>
-								</div>
-							</article>
-						</div>
+		{% include "showMensagens.html" %}
+
+		<div class="tile is-ancestor">
+			<div class="tile is-vertical">
+				<div class="tile">
+					<div class="tile is-parent is-vertical">
+						<article class="tile is-child notification is-primary">
+							<p class="title">Login</p>
+							<p class="subtitle">Faça login com a sua conta do Google+</p>
+						</article>
+						<article class="tile is-child is-centered">
+							<!-- botão de login do google -->
+							<div id="signinButton">
+								<span class="g-signin2"
+									data-scope="openid email"
+									data-clientid="{{ id_cliente }}"
+									data-redirecturi="postmessage"
+									data-accesstype="offline"
+									data-cookiepolicy="single_host_origin"
+									data-onsuccess="signInSuccess"
+									data-onfailure="signInFailure"
+									data-theme="light"
+									data-width="300"
+									data-height="75"
+									data-longtitle="true">
+								</span>
+							</div>
+
+							<div id="resultado"></div>
+						</article>
+						<article class="tile is-child" id="botaoVoltar">
+							<div class="control">
+								<a href="/">
+									<button type="button" class="button is-text">Voltar</button>
+								</a>
+							</div>
+						</article>
 					</div>
 				</div>
 			</div>
-	
-					
-
 		</div>
 	</main>
 
-		<script>
-			function signInSuccess(authResult) {
+	<script>
+		function signInSuccess(authResult) {
 
-				$.ajax({
-					type: "POST",
-					url: "{{ url_for("loginUsuario") }}?state={{state}}",
-					processData: false,
-					data: authResult["code"],
-					contentType: "application/octet-stream; charset=utf-8",
-					success: function(result) {
-						// verifica se a resposta ao servidor é necessária
-						if (result) {
-							// esconde o botão do google agora que o usuário está conectado
-							$("#signinButton").attr("style", "display: none");
-							$("#botaoVoltar").attr("style", "display: none");
-							$("#resultado").html("Login realizado com sucesso!</br>"+ result + "</br>Redirecionando...");
-							setTimeout(function() {
-								window.location.href = "/categorias/";
-							}, 4000);
-						}
-				    }
-				});
+			$.ajax({
+				type: "POST",
+				url: "{{ url_for("loginUsuario") }}?state={{state}}",
+				processData: false,
+				data: authResult["code"],
+				contentType: "application/octet-stream; charset=utf-8",
+				success: function(result) {
+					// verifica se a resposta ao servidor é necessária
+					if (result) {
+						// esconde o botão do google agora que o usuário está conectado
+						$("#signinButton").attr("style", "display: none");
+						$("#botaoVoltar").attr("style", "display: none");
+						$("#resultado").html("Login realizado com sucesso!</br>"+ result + "</br>Redirecionando...");
+						setTimeout(function() {
+							window.location.href = "/categorias/";
+						}, 4000);
+					}
+			    }
+			});
 
+		}
+
+		function signInFailure(authResult) {
+
+			if (authResult["error"]) {
+				console.log("Houve um erro: " + authResult["error"]);
+	  		} else {
+				$("#resultado").html("Falha ao fazer chamada pelo servidor. Verifique o seu console.");
 			}
 
-			function signInFailure(authResult) {
-
-				if (authResult["error"]) {
-					console.log("Houve um erro: " + authResult["error"]);
-		  		} else {
-					$("#resultado").html("Falha ao fazer chamada pelo servidor. Verifique o seu console.");
-				}
-
-			}
-		</script>
-	</main>
+		}
+	</script>
 
 </body>
 </html>

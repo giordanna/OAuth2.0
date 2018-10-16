@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+	<link href="{{ url_for("static", filename="css/styles.css") }}" rel="stylesheet">
+	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+	<link href="{{ url_for("static", filename="css/styles.css") }}" rel="stylesheet">
+
+	<title>{{ titulo }} | Catálogo</title>
+</head>
+<body>
+
+	<main class="container">
+		<br>
+		<p align="center">
+			<span class="icon is-large fa-3x">
+				<i class="far fa-frown-open"></i>
+				<i class="far fa-sad-tear"></i>
+				<i class="far fa-sad-cry"></i>
+			</span>
+		</p>
+		<br>
+		<div class="tile is-ancestor">
+			<div class="tile is-vertical">
+				<div class="tile">
+					<div class="tile is-parent is-vertical">
+						<article class="tile is-child notification is-danger">
+							<p class="title">{{ titulo }}</p>
+							<p class="subtitle">{{ corpo }}</p>
+						</article>
+						<article class="tile is-child" id="botaoVoltar">
+							<div class="control">
+								<a href="/">
+									<button type="button" class="button is-text">Voltar para página inicial</button>
+								</a>
+							</div>
+						</article>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+</body>
+</html>

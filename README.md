@@ -26,7 +26,6 @@ Na hora de criar o ID, dentro de Restrições:
 
 ## TODOs
 - Utilizar blueprints
-- Utilizar errorhandler
 - Utilizar o SQL-Alchemy
 
 ## Dúvidas

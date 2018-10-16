@@ -51,4 +51,5 @@ def getUsuario(usuario_id):
 import catalogo.usuarios_views
 import catalogo.categorias_views
 import catalogo.itens_views
+import catalogo.erros_views
 import catalogo.api
