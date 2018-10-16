@@ -25,10 +25,8 @@ Na hora de criar o ID, dentro de Restrições:
 - Execute `flask run`. Depois, você poderá acessar localmente o site em http://localhost:5000
 
 ## TODOs
-- Converter a estrutura do aplicativo para de grande escala
 - Utilizar blueprints
 - Utilizar errorhandler
-- Utilizar flask-restful para as APIs
 - Utilizar o SQL-Alchemy
 
 ## Dúvidas

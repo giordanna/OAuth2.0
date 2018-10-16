@@ -3,7 +3,7 @@
 
 from configuracao_db import Base, Usuario, Categoria, Item, engine
 from flask import (
-    Flask, jsonify, request, url_for, g,
+    Flask, request, url_for, g,
     render_template, flash, redirect
 )
 
@@ -20,7 +20,7 @@ import string
 import hashlib
 import os
 from flask_uploads import UploadSet, configure_uploads, IMAGES
-from flask_restful import Resource, Api
+from flask_restful import Api
 
 
 DIRETORIO_UPLOAD = "static/img"
