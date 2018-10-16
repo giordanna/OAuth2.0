@@ -9,8 +9,10 @@ def abortarSeForNulo(objeto):
     if objeto is None:
         abort(404, erro=u"Categoria/item não existente")
 
+
 parser = reqparse.RequestParser()
 parser.add_argument('erro')
+
 
 class ListaCategorias(Resource):
     def get(self):
@@ -29,13 +31,16 @@ class ListaCategorias(Resource):
             categoriaSerializada["itens"] = itensSerializados
             categoriasSerializadas.append(categoriaSerializada)
         session.close()
-        return { "categorias" : categoriasSerializadas }
+        return {
+            "categorias": categoriasSerializadas
+        }
 
 
 class UmaCategoria(Resource):
     def get(self, categoria):
         session = DBSession()
-        categoria = session.query(Categoria).filter_by(id=categoria).one_or_none()
+        categoria = session.query(
+            Categoria).filter_by(id=categoria).one_or_none()
         abortarSeForNulo(categoria)
         itens = session.query(Item).filter_by(categoria_id=categoria.id).all()
         # serializa cada item das categoria, e depois cria uma lista
@@ -46,7 +51,9 @@ class UmaCategoria(Resource):
         categoriaSerializada = categoria.serialize
         categoriaSerializada["itens"] = itensSerializados
         session.close()
-        return { "categoria" : categoriaSerializada }
+        return {
+            "categoria": categoriaSerializada
+        }
 
 
 class UmItem(Resource):
@@ -56,7 +63,9 @@ class UmItem(Resource):
             Item).filter_by(id=item, categoria_id=categoria).one_or_none()
         abortarSeForNulo(item)
         session.close()
-        return { "item" : item.serialize }
+        return {
+            "item": item.serialize
+        }
 
 
 api.add_resource(ListaCategorias, "/api/v1/categorias/")

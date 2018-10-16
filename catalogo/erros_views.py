@@ -32,4 +32,3 @@ def viewErroInternalServerError(error):
     corpo = u'''O servidor está falhando... de novo...
     deve ser algum erro de programação ou está sobrecarregado. rip'''
     return render_template("showErro.html", titulo=titulo, corpo=corpo), 500
-    

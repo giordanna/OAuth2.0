@@ -48,8 +48,12 @@ def getUsuario(usuario_id):
     return usuario
 
 
-import catalogo.usuarios_views
-import catalogo.categorias_views
-import catalogo.itens_views
-import catalogo.erros_views
-import catalogo.api
+# justificativa de utilizar o nopep8:
+# seguindo instruções na documentação do flask
+# http://flask.pocoo.org/docs/1.0/patterns/packages/
+# "Import the view module after the application object is created"
+import catalogo.usuarios_views  # nopep8
+import catalogo.categorias_views  # nopep8
+import catalogo.itens_views  # nopep8
+import catalogo.erros_views  # nopep8
+import catalogo.api  # nopep8
