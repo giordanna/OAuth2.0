@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block inserirCabecalho %}
-	{% include "cabecalhoPublica.html" %}
+	{% include "cabecalho.html" %}
 {% endblock %}
 
 {% block inserirSidebar %}
@@ -14,6 +14,11 @@
 
 {% block conteudoPrincipal %}
 	<div class="column is-9">
+		<p>
+			<a href="{{ url_for("categorias.newCategoria") }}" class="box is-primary is-medium has-text-centered">
+				Adicionar nova categoria
+			</a>
+		</p>
 {% endblock %}
 
 {% block tituloPagina %}
@@ -24,13 +29,12 @@
 	Itens recentes...
 {% endblock %}
 
-
 {% block listaItens %}
 	{% for i in range(itens|length) %}
 
 		<div class="tile is-parent is-one-third">
 			<article class="tile is-child box">
-				<a href="{{ url_for("showItem", categoria=itens[i].categoria_id, item=itens[i].id) }}">
+				<a href="{{ url_for("itens.showItem", categoria=itens[i].categoria_id, item=itens[i].id) }}">
 					<p class="title">
 						{{ itens[i].nome }}
 					</p>

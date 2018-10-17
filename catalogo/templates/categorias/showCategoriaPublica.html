@@ -29,7 +29,7 @@
 
 		<div class="tile is-parent is-one-third">
 			<article class="tile is-child box">
-				<a href="{{ url_for("showItem", categoria=itens[i].categoria_id, item=itens[i].id) }}">
+				<a href="{{ url_for("itens.showItem", categoria=itens[i].categoria_id, item=itens[i].id) }}">
 					<p class="title">
 						{{ itens[i].nome }}
 					</p>

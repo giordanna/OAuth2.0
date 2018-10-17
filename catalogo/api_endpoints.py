@@ -3,6 +3,7 @@
 
 from catalogo import *
 from flask_restful import reqparse, abort, Resource
+from flask import Blueprint
 
 
 def abortarSeForNulo(objeto):

@@ -1,7 +1,7 @@
 {% extends "layoutPrincipal.html" %}
 
 {% block tituloSite %}
-	Catálogo
+	{{ categoria.nome }} | Catálogo
 {% endblock %}
 
 {% block inserirCabecalho %}
@@ -14,27 +14,43 @@
 
 {% block conteudoPrincipal %}
 	<div class="column is-9">
+		{% if categoria.usuario_id == usuario_id %}
+		<div class="field is-grouped">
+			<div class="control">
+				<a href="{{ url_for("categorias.editCategoria", categoria=categoria.id) }}">
+					<button type="button" class="button is-medium">Editar</button>
+				</a>
+			</div>
+			<div class="control">
+				<a href="{{ url_for("categorias.deleteCategoria", categoria=categoria.id) }}">
+					<button type="button" class="button is-medium">Excluir</button>
+				</a>
+			</div>
+		</div>
 		<p>
-			<a href="{{ url_for("newCategoria") }}" class="box is-primary is-medium has-text-centered">
-				Adicionar nova categoria
+			<a href="{{ url_for("itens.newItem", categoria=categoria.id) }}" class="box is-primary is-medium has-text-centered">
+				Adicionar novo item
 			</a>
 		</p>
+		{% endif %}
 {% endblock %}
 
+
 {% block tituloPagina %}
-	Catálogo
+	{{ categoria.nome }}
 {% endblock %}
 
 {% block subtituloPagina %}
-	Itens recentes...
+	Itens: {{ itens|length }}
 {% endblock %}
 
 {% block listaItens %}
+
 	{% for i in range(itens|length) %}
 
 		<div class="tile is-parent is-one-third">
 			<article class="tile is-child box">
-				<a href="{{ url_for("showItem", categoria=itens[i].categoria_id, item=itens[i].id) }}">
+				<a href="{{ url_for("itens.showItem", categoria=itens[i].categoria_id, item=itens[i].id) }}">
 					<p class="title">
 						{{ itens[i].nome }}
 					</p>

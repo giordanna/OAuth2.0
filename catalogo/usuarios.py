@@ -1,10 +1,28 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
 
+from flask import make_response, Blueprint
+from oauth2client.client import (
+    flow_from_clientsecrets, FlowExchangeError
+)
 from catalogo import *
+import string
+import random
+import json
+import httplib2
+import requests
+
+usuarios = Blueprint(
+    "usuarios", __name__,
+    template_folder="templates/usuarios")
 
 
-@app.route("/login/", methods=["GET", "POST"])
+def getUsuario(usuario_id):
+    usuario = Usuario.query.filter_by(id=usuario_id).one_or_none()
+    return usuario
+
+
+@usuarios.route("/login/", methods=["GET", "POST"])
 def loginUsuario():
     # trecho de validação de login de usuário retirado de:
     # https://github.com/udacity/ud330/blob/master/Lesson2/step5/project.py
@@ -113,12 +131,12 @@ def loginUsuario():
             "loginUsuario.html", id_cliente=ID_CLIENTE, state=state)
 
 
-@app.route("/logout/")
+@usuarios.route("/logout/")
 def logoutUsuario():
     access_token = login_session.get("access_token")
     if access_token is None:
         flash(u"Usuário não conectado.")
-        return redirect(url_for("showCategorias"))
+        return redirect(url_for("categorias.showCategorias"))
 
     # desloga o usuário tanto no aplicativo tanto na api do google
     url = ("https://accounts.google.com/o/oauth2/revoke?token=%s"
@@ -136,7 +154,7 @@ def logoutUsuario():
         flash(u"Usuário desconectado com sucesso.")
     else:
         flash(u"Falha ao tentar desconectar usuário.")
-        return redirect(url_for("showCategorias"))
+        return redirect(url_for("categorias.showCategorias"))
 
     return render_template("logoutUsuario.html", id_cliente=ID_CLIENTE)
 

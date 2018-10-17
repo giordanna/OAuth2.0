@@ -2,6 +2,14 @@
 # !/usr/bin/env python3
 
 from catalogo import *
+from flask import Blueprint
+import hashlib
+import os
+
+itens = Blueprint(
+    "itens", __name__,
+    url_prefix="/categorias/<int:categoria>",
+    template_folder="templates/itens")
 
 
 def arquivoPermitido(arquivo):
@@ -9,38 +17,41 @@ def arquivoPermitido(arquivo):
            arquivo.rsplit('.', 1)[1].lower() in EXTENSOES_PERMITIDAS
 
 
-@app.route("/categorias/<int:categoria>/<int:item>/")
+@itens.route("/<int:item>/")
 def showItem(categoria, item):
     umItem = Item.query.filter_by(
         id=item, categoria_id=categoria).one_or_none()
     if umItem is None:
         flash(u"Erro: O item que você está tentando acessar não existe!")
-        return redirect(url_for("showCategoria", categoria=categoria))
+        return redirect(
+            url_for("categorias.showCategoria", categoria=categoria))
     else:
         if "usuario_id" not in login_session:
-            return render_template("showItemPublica.html", item=umItem)
+            return render_template(
+                "itens/showItemPublica.html", item=umItem)
         return render_template(
-            "showItem.html", item=umItem,
+            "itens/showItem.html", item=umItem,
             usuario_id=login_session["usuario_id"])
 
 
-@app.route("/categorias/<int:categoria>/new/", methods=["GET", "POST"])
+@itens.route("/new/", methods=["GET", "POST"])
 def newItem(categoria):
     # verifica se há algum usuário logado, e depois se tal usuário
     # é dono desta categoria
     if "usuario_id" not in login_session:
         flash(u"Você precisa estar logado para acessar esta página.")
-        return redirect(url_for("loginUsuario"))
+        return redirect(url_for("usuarios.loginUsuario"))
     umaCategoria = Categoria.query.filter_by(id=categoria).one_or_none()
     if umaCategoria is None:
         flash(u"Erro: A categoria que você está tentando acessar não existe!")
-        return redirect(url_for("showCategorias"))
+        return redirect(url_for("categorias.showCategorias"))
     if login_session["usuario_id"] != umaCategoria.usuario_id:
         flash(u"Você não é o dono desta categoria.")
-        return redirect(url_for("showCategoria", categoria=umaCategoria.id))
+        return redirect(
+            url_for("categorias.showCategoria", categoria=umaCategoria.id))
 
     if request.method == "POST":
-        umUsuario = getUsuario(login_session["usuario_id"])
+        umUsuario = usuarios.getUsuario(login_session["usuario_id"])
 
         newItem = Item(
             nome=request.form["nome"], descricao=request.form["descricao"],
@@ -66,27 +77,28 @@ def newItem(categoria):
             db.session.commit()
         flash("Novo item criado!")
         return redirect(url_for(
-            "showItem", categoria=categoria, item=newItem.id))
+            "itens.showItem", categoria=categoria, item=newItem.id))
     else:
         return render_template("newItem.html", categoria=umaCategoria)
 
 
-@app.route(
-    "/categorias/<int:categoria>/<int:item>/edit/", methods=["GET", "POST"])
+@itens.route("<int:item>/edit/", methods=["GET", "POST"])
 def editItem(categoria, item):
     # verifica se há algum usuário logado, e depois se tal usuário
     # é dono deste item
     if "usuario_id" not in login_session:
         flash(u"Você precisa estar logado para acessar esta página.")
-        return redirect(url_for("loginUsuario"))
+        return redirect(url_for("usuarios.loginUsuario"))
     umItem = Item.query.filter_by(
         id=item, categoria_id=categoria).one_or_none()
     if umItem is None:
         flash(u"Erro: O item que você está tentando acessar não existe!")
-        return redirect(url_for("showCategoria", categoria=categoria))
+        return redirect(
+            url_for("categorias.showCategoria", categoria=categoria))
     if login_session["usuario_id"] != umItem.usuario_id:
         flash(u"Você não é o dono desta categoria.")
-        return redirect(url_for("showItem", categoria=categoria, item=item))
+        return redirect(
+            url_for("itens.showItem", categoria=categoria, item=item))
 
     if request.method == "POST":
 
@@ -116,27 +128,29 @@ def editItem(categoria, item):
         db.session.add(umItem)
         db.session.commit()
         flash("O item foi editado!")
-        return redirect(url_for("showItem", categoria=categoria, item=item))
+        return redirect(
+            url_for("itens.showItem", categoria=categoria, item=item))
     else:
         return render_template("editItem.html", item=umItem)
 
 
-@app.route(
-    "/categorias/<int:categoria>/<int:item>/delete/", methods=["GET", "POST"])
+@itens.route("<int:item>/delete/", methods=["GET", "POST"])
 def deleteItem(categoria, item):
     # verifica se há algum usuário logado, e depois se tal usuário
     # é dono deste item
     if "usuario_id" not in login_session:
         flash(u"Você precisa estar logado para acessar esta página.")
-        return redirect(url_for("loginUsuario"))
+        return redirect(url_for("usuarios.loginUsuario"))
     umItem = Item.query.filter_by(
         id=item, categoria_id=categoria).one_or_none()
     if umItem is None:
         flash(u"Erro: O item que você está tentando acessar não existe!")
-        redirect(url_for("showCategoria", categoria=categoria))
+        redirect(
+            url_for("categorias.showCategoria", categoria=categoria))
     if login_session["usuario_id"] != umItem.usuario_id:
         flash(u"Você não é o dono desta categoria.")
-        return redirect(url_for("showItem", categoria=categoria, item=item))
+        return redirect(
+            url_for("itens.showItem", categoria=categoria, item=item))
 
     if request.method == "POST":
         if umItem.imagem != "item_sem_imagem.png":
@@ -148,6 +162,7 @@ def deleteItem(categoria, item):
         db.session.delete(umItem)
         db.session.commit()
         flash(u"O item foi excluído!")
-        return redirect(url_for("showCategoria", categoria=categoria))
+        return redirect(
+            url_for("categorias.showCategoria", categoria=categoria))
     else:
         return render_template("deleteItem.html", item=umItem)

@@ -6,7 +6,7 @@
 		<ul class="menu-list">
 			{% for categoria in categorias %}
 				<li>
-					<a href="{{ url_for("showCategoria", categoria=categoria.id) }}">
+					<a href="{{ url_for("categorias.showCategoria", categoria=categoria.id) }}">
 						{{ categoria.nome }}
 					</a>
 				</li>

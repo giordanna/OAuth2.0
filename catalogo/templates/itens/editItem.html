@@ -1,7 +1,7 @@
 {% extends "layoutPrincipal.html" %}
 
 {% block tituloSite %}
-	Adicionar item | Catálogo
+	Editar item | Catálogo
 {% endblock %}
 
 {% block inserirCabecalho %}
@@ -15,23 +15,23 @@
 
 
 {% block tituloPagina %}
-	Adicionar item para a categoria {{ categoria.nome }}
+	Editar o item {{ item.nome }}
 {% endblock %}
 
 {% block listaItens %}
 		<div class="tile is-parent">
 			<div class="tile is-child">
-				<form method="POST" enctype="multipart/form-data" action=""{{ url_for("newItem", categoria=categoria.id) }}">
+				<form method="POST" enctype="multipart/form-data" action=""{{ url_for("itens.editItem", categoria=item.categoria_id, item=item.id) }}">
 					<div class="field">
 						<label class="label">Nome*:</label>
 						<div class="control">
-							<input name="nome" required class="input is-medium" type="text"><br>
+							<input name="nome" required class="input is-medium" type="text" value="{{ item.nome }}"><br>
 						</div>
 					</div>
 					<div class="field">
 						<label class="label">Descrição*:</label>
 						<div class="control">
-							<textarea name="descricao" required class="textarea is-medium"></textarea>
+							<textarea name="descricao" required class="textarea is-medium">{{ item.descricao }}</textarea>
 						</div>
 					</div>
 					<div class="field">
@@ -43,7 +43,7 @@
 										<i class="fas fa-upload"></i>
 									</span>
 									<span class="file-label">
-										Envie uma imagem
+										Nova imagem
 									</span>
 								</span>
 								<span id="nomeArquivo" class="file-name">
@@ -51,13 +51,20 @@
 								</span>
 							</label>
 						</div>
+						<br>
+						<label class="label">Imagem anterior:</label>
+						<div class="tile is-parent">
+							<article class="tile is-child box">
+								<img width="100%" src="{{ url_for("static", filename="img/" + item.imagem) }}">
+							</article>
+						</div>
 					</div>
 					<div class="field is-grouped">
 						<div class="control">
 							<button type="submit" class="button is-success is-medium">Enviar</button>
 						</div>
 						<div class="control">
-							<a href="{{ url_for("showCategoria", categoria=categoria.id) }}">
+							<a href="{{ url_for("itens.showItem", categoria=item.categoria_id, item=item.id) }}">
 								<button type="button" class="button is-text is-medium">Cancelar</button>
 							</a>
 						</div>

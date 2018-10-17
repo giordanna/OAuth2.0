@@ -2,7 +2,7 @@
 <header>
 	<nav class="navbar is-white">
 		<div class="navbar-brand">
-			<a class="navbar-item brand-text" href="/">
+			<a class="navbar-item brand-text" href="{{ url_for("categorias.showCategorias") }}">
 				Catálogo
 			</a>
 
@@ -16,7 +16,7 @@
 		<div id="navMenu" class="navbar-menu">
 			<div class="navbar-end">
 				<div class="navbar-item">
-					<a class="button is-primary" href="{{ url_for("loginUsuario") }}">
+					<a class="button is-primary" href="{{ url_for("usuarios.loginUsuario") }}">
 						<span>
 							Login
 						</span>

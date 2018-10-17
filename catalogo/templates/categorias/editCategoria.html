@@ -21,7 +21,7 @@
 {% block listaItens %}
 		<div class="tile is-parent">
 			<div class="tile is-child">
-				<form method="POST" enctype="multipart/form-data" action="{{ url_for("editCategoria", categoria=categoria.id) }}">
+				<form method="POST" enctype="multipart/form-data" action="{{ url_for("categorias.editCategoria", categoria=categoria.id) }}">
 					<div class="field">
 						<label class="label">Nome*:</label>
 						<div class="control">
@@ -33,7 +33,7 @@
 							<button type="submit" class="button is-primary is-medium">Enviar</button>
 						</div>
 						<div class="control">
-							<a href="{{ url_for("showCategoria", categoria=categoria.id) }}">
+							<a href="{{ url_for("categorias.showCategoria", categoria=categoria.id) }}">
 								<button type="button" class="button is-text is-medium">Cancelar</button>
 							</a>
 						</div>

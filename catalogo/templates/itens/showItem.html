@@ -5,18 +5,35 @@
 {% endblock %}
 
 {% block inserirCabecalho %}
-	{% include "cabecalhoPublica.html" %}
+	{% include "cabecalho.html" %}
 {% endblock %}
 
 
 {% block conteudoPrincipal %}
 	<div class="column is-three-fifths is-offset-one-fifth">
 		<p>
-			<a href="{{ url_for("showCategoria", categoria=item.categoria_id) }}" class="box is-primary is-medium has-text-centered">
+			<a href="{{ url_for("categorias.showCategoria", categoria=item.categoria_id) }}" class="box is-primary is-medium has-text-centered">
 				Voltar para a categoria
 			</a>
 		</p>
 		<br>
+
+		{% if item.usuario_id == usuario_id %}
+
+			<div class="field is-grouped">
+				<div class="control">
+					<a href="{{ url_for("itens.editItem", categoria=item.categoria_id, item=item.id) }}">
+						<button type="button" class="button is-medium">Editar</button>
+					</a>
+				</div>
+				<div class="control">
+					<a href="{{ url_for("itens.deleteItem", categoria=item.categoria_id, item=item.id) }}">
+						<button type="button" class="button is-medium">Excluir</button>
+					</a>
+				</div>
+			</div>
+			
+	{% endif %}
 {% endblock %}
 
 
@@ -25,7 +42,7 @@
 {% endblock %}
 
 {% block subtituloPagina %}
-	<strong>Descrição:</strong> {{ item.descricao }}
+	
 {% endblock %}
 
 {% block listaItens %}
