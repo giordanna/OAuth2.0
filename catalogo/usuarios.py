@@ -39,7 +39,7 @@ def loginUsuario():
         try:
             # atualiza o código de autorização em um objeto de credenciais
             oauth_flow = flow_from_clientsecrets(
-                "segredos_cliente.json", scope="")
+                "/home/student/projeto-catalogo/segredos_cliente.json", scope="")
             oauth_flow.redirect_uri = "postmessage"
             credentials = oauth_flow.step2_exchange(code)
         except FlowExchangeError:
@@ -54,7 +54,7 @@ def loginUsuario():
         url = ("https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s"
                % access_token)
         h = httplib2.Http()
-        result = json.loads(h.request(url, "GET")[1])
+        result = json.loads(h.request(url, "GET")[1].decode("utf-8"))
         # se houver algum problema, retornar erro
         if result.get("error") is not None:
             response = make_response(json.dumps(result.get("error")), 500)
@@ -125,7 +125,7 @@ def loginUsuario():
         return output
     else:
         state = "".join(random.choice(
-                string.ascii_uppercase + string.digits) for x in xrange(32))
+                string.ascii_uppercase + string.digits) for x in range(32))
         login_session["state"] = state
         return render_template(
             "loginUsuario.html", id_cliente=ID_CLIENTE, state=state)

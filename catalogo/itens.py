@@ -70,7 +70,7 @@ def newItem(categoria):
             arquivo = request.files["imagem"]
             tipo_imagem = arquivo.filename.rsplit(".", 1)[1].lower()
             imagem_nome = hashlib.sha1(
-                str(item_id)).hexdigest() + "." + tipo_imagem
+                str(item_id).encode("utf-8")).hexdigest() + "." + tipo_imagem
             imagemUpload.save(arquivo, name=imagem_nome)
             newItem.imagem = imagem_nome
             db.session.add(newItem)
@@ -118,7 +118,7 @@ def editItem(categoria, item):
             else:
                 tipo_imagem = arquivo.filename.rsplit(".", 1)[1].lower()
                 imagem_nome = hashlib.sha1(
-                    str(umItem.id)).hexdigest() + "." + tipo_imagem
+                    str(umItem.id).encode("utf-8")).hexdigest() + "." + tipo_imagem
                 umItem.imagem = imagem_nome
 
             imagemUpload.save(arquivo, name=umItem.imagem)
