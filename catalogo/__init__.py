@@ -20,7 +20,7 @@ imagemUpload = UploadSet("imagem", IMAGES)
 app.config["UPLOADED_IMAGEM_DEST"] = DIRETORIO_UPLOAD
 configure_uploads(app, imagemUpload)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://student:123qwe@localhost/catalogo.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://student:123qwe@localhost/catalogo"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
