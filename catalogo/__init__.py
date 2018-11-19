@@ -12,7 +12,6 @@ import json
 
 app = Flask(__name__)
 app.secret_key = "super_chave_secreta"
-app.debug = True
 
 api = Api(app)
 

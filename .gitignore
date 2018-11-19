@@ -1,5 +1,3 @@
-.vagrant/
-segredos_cliente.json
 catalogo.db
 catalogo.egg-info/
 *.pyc
