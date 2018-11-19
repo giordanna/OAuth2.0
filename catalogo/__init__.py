@@ -9,6 +9,7 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 import json
+import os
 
 app = Flask(__name__)
 app.secret_key = "super_chave_secreta"
@@ -77,8 +78,11 @@ class Item(db.Model):
 
 db.create_all()
 
-ID_CLIENTE = json.loads(
-    open("segredos_cliente.json", "r").read())["web"]["client_id"]
+PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
+json_url = os.path.join(PROJECT_ROOT, 'segredos_cliente.json')
+
+ID_CLIENTE = json.load(
+    open(json_url))["web"]["client_id"]
 
 # justificativa de utilizar o nopep8:
 # seguindo instruções na documentação do flask
