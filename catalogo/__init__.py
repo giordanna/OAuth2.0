@@ -16,7 +16,7 @@ app.secret_key = "super_chave_secreta"
 
 api = Api(app)
 
-DIRETORIO_UPLOAD = "/home/student/projeto-catalogo/catalogo/static/img"
+DIRETORIO_UPLOAD = "/home/grader/projeto-catalogo/catalogo/static/img"
 imagemUpload = UploadSet("imagem", IMAGES)
 app.config["UPLOADED_IMAGEM_DEST"] = DIRETORIO_UPLOAD
 configure_uploads(app, imagemUpload)
@@ -79,7 +79,7 @@ class Item(db.Model):
 db.create_all()
 
 ID_CLIENTE = json.load(
-    open("/home/student/projeto-catalogo/segredos_cliente.json"))["web"]["client_id"]
+    open("/home/grader/projeto-catalogo/segredos_cliente.json"))["web"]["client_id"]
 
 # justificativa de utilizar o nopep8:
 # seguindo instruções na documentação do flask

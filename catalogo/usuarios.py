@@ -39,7 +39,7 @@ def loginUsuario():
         try:
             # atualiza o código de autorização em um objeto de credenciais
             oauth_flow = flow_from_clientsecrets(
-                "/home/student/projeto-catalogo/segredos_cliente.json", scope="")
+                "/home/grader/projeto-catalogo/segredos_cliente.json", scope="")
             oauth_flow.redirect_uri = "postmessage"
             credentials = oauth_flow.step2_exchange(code)
         except FlowExchangeError:
