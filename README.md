@@ -2,6 +2,8 @@
 Quarto projeto do curso nanodegree da Udacity de Desenvolvedor Full-stack.
 Este projeto é um pequeno servidor em python, utilizando o framework Flask, que hospeda um serviço de registro de catálogo, onde o usuário deve logar com uma conta Google+ para adicionar categorias e itens. Há também alguns endpoints de API.
 
+Esta versão foi modificada para que seu deploy seja feito em um servidor linux.
+
 ## Como instalar
 - Baixe ou clone este repositório usando `git clone https://github.com/giordanna/projeto-catalogo.git`;
 - Dentro do diretório, instale as dependências usando `pip install -r requirements.txt`;
